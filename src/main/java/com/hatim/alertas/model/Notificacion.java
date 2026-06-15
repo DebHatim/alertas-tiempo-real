@@ -15,14 +15,14 @@ public class Notificacion {
 
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
-    private Usuario usuario;
+    private Usuario usuario; // Usuario al que se le notifica
 
     @Column(nullable = false)
-    private String mensaje;
+    private String mensaje; // Mensaje mostrando el cambio del precio del producto
 
     @Column(nullable = false)
-    private Boolean leida = false;
+    private Boolean leida = false; // Usuario puede marcar notificación como leida o como no leida
 
     @Column(nullable = false)
-    private LocalDateTime fecha = LocalDateTime.now();
+    private LocalDateTime fecha = LocalDateTime.now(); // Fecha en la que se notifica el cambio
 }

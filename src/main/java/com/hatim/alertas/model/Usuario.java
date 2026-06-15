@@ -12,12 +12,12 @@ public class Usuario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
+    private String nombre; // Nombre del usuario
+
     @Column(nullable = false, unique = true)
-    private String email;
+    private String email; // Correo electronico del usuario
 
     @Column(nullable = false)
-    private String password;
-
-    @Column(nullable = false)
-    private String nombre;
+    private String password; // Contrasena del usuario
 }

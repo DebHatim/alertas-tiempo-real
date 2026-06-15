@@ -14,8 +14,8 @@ public class Producto {
     private Long id;
 
     @Column(nullable = false)
-    private String nombre;
+    private String nombre; // Nombre del producto
 
     @Column(nullable = false)
-    private BigDecimal precioActual;
+    private BigDecimal precioActual; // Precio original del producto
 }

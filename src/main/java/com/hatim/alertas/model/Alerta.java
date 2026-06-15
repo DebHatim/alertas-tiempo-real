@@ -15,15 +15,15 @@ public class Alerta {
 
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
-    private Usuario usuario;
+    private Usuario usuario; // Usuario que crea la alerta
 
     @ManyToOne
     @JoinColumn(name = "producto_id", nullable = false)
-    private Producto producto;
+    private Producto producto; // Producto que se alerta
 
     @Column(nullable = false)
-    private BigDecimal precioObjetivo;
+    private BigDecimal precioObjetivo; // Precio deseado del producto
 
     @Column(nullable = false)
-    private Boolean activa = true;
+    private Boolean activa = true; // Usuario puede activar o desactivar la alerta
 }
