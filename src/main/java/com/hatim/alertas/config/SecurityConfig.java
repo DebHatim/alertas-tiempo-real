@@ -27,7 +27,8 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/auth/**", // registro y login
                                 "/ws/**", // websocket
-                                "/api/productos" // pagina indice para ver productos
+                                "/api/productos", // pagina indice para ver productos
+                                "/api/alertas/**" // permitir creacion de alertas
                         ).permitAll()
                         .anyRequest().authenticated()
                 );
