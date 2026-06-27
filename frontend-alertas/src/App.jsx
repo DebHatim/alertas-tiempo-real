@@ -1,7 +1,7 @@
 import React, {useContext} from 'react'
 import {BrowserRouter as Router, Routes, Route, Navigate} from 'react-router-dom'
 import {AuthContext} from './context/AuthContext'
-import Login from './pages/Login'
+import Auth from './pages/Auth.jsx'
 import DashBoard from './pages/DashBoard'
 import Alertas from './pages/Alertas'
 
@@ -14,7 +14,7 @@ function App() {
                 {/* Ruta Login/Registro */}
                 <Route
                     path="/login"
-                    element={!user ? <Login/> : <Navigate to="/dashboard"/>}
+                    element={!user ? <Auth/> : <Navigate to="/dashboard"/>}
                 />
 
                 {/* Rutas privadas del usuario */}
