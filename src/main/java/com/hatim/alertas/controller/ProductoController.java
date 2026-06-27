@@ -14,6 +14,7 @@ import java.util.List;
 // Prefijo es "/api/productos"
 @RequestMapping("/api/productos")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:5173")
 public class ProductoController {
 
     private final ProductoRepository productoRepository;
