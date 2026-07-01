@@ -2,10 +2,8 @@ package com.hatim.alertas.service;
 
 import com.hatim.alertas.dto.PrecioEventoDTO;
 import com.hatim.alertas.model.Alerta;
-import com.hatim.alertas.model.Notificacion;
 import com.hatim.alertas.model.Producto;
 import com.hatim.alertas.repository.AlertaRepository;
-import com.hatim.alertas.repository.NotificacionRepository;
 import com.hatim.alertas.repository.ProductoRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +20,6 @@ public class AlertaEvaluadorService {
 
     // Inyeccion de dependencias
     private final AlertaRepository alertaRepository;
-    private final NotificacionRepository notificacionRepository;
     private final ProductoRepository productoRepository;
     private final NotificacionService notificacionService;
 
@@ -54,23 +51,11 @@ public class AlertaEvaluadorService {
 
             if (seDispara) {
 
-                // Si se debe notificar se construye el mensaje
-                String mensaje = String.format(
-                        "¡Alerta! %s ha bajado a %.2f€ (tu objetivo: %.2f€)",
-                        evento.getProductoNombre(),evento.getPrecioActual(),alerta.getPrecioObjetivo()
-                );
-
-                // Crear y guardar la notificacion en BD
-                Notificacion notificacion = new Notificacion();
-                notificacion.setUsuario(alerta.getUsuario());
-                notificacion.setMensaje(mensaje);
-                notificacionRepository.save(notificacion);
-
                 // LLama al servicio que envia por WebSocket al frontend
-                notificacionService.enviarNotificacion(alerta.getUsuario().getId(), evento, alerta.getPrecioObjetivo());
+                notificacionService.enviarNotificacion(alerta.getUsuario(), evento, alerta.getPrecioObjetivo());
 
                 // Log test
-                log.info("Alerta disparada para usuario {}: {}", alerta.getUsuario().getId(), mensaje);
+                log.info("Alerta disparada para usuario {}", alerta.getUsuario().getId());
             }
         }
     }
