@@ -58,5 +58,5 @@ export const useWebSocket = (usuarioId) => {
         };
     }, [usuarioId]);
 
-    return {notificaciones, conectado};
+    return {notificaciones, setNotificaciones, conectado};
 };
