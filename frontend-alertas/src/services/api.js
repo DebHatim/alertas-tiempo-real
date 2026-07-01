@@ -29,7 +29,8 @@ export const alertaService = {
 // Servicio para manejar las notificaciones dependiendo de los parametros
 export const notificacionService = {
     getByUsuario: (usuarioId) => api.get(`/notificaciones/usuario/${usuarioId}`),
-    marcarLeida: (id) => api.patch(`/notificaciones/${id}/leer`),
+    getHistorial: (usuarioId) => api.get(`/notificaciones/usuario/${usuarioId}`),
+    marcarLeida: (id) => api.patch(`/notificaciones/${id}/leer`)
 };
 
 export default api;
