@@ -4,12 +4,14 @@ import {AuthContext} from './context/AuthContext'
 import Auth from './pages/Auth.jsx'
 import DashBoard from './pages/DashBoard'
 import Alertas from './pages/Alertas'
+import Navbar from "./components/Navbar.jsx";
 
 function App() {
     const {user} = useContext(AuthContext)
 
     return (
         <Router>
+            <Navbar />
             <Routes>
                 {/* Ruta Login/Registro */}
                 <Route
