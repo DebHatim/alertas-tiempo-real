@@ -1,14 +1,14 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { useWebSocket } from '../hooks/useWebSocket';
-import { productoService } from '../services/api';
+import {notificacionService, productoService} from '../services/api';
 
 const DashBoard = () => {
     const { user } = useContext(AuthContext);
     const [productos, setProductos] = useState([]);
 
     // Conectamos al WebSocket usando el ID del usuario logueado
-    const { notificaciones, conectado } = useWebSocket(user?.id);
+    const { notificaciones, setNotificaciones, conectado } = useWebSocket(user?.id);
 
     // Cargamos los productos de la BD
     useEffect(() => {
@@ -16,6 +16,17 @@ const DashBoard = () => {
             .then(response => setProductos(response.data))
             .catch(error => console.error("Error cargando productos:", error));
     }, []);
+
+    // Segundo useEffect para cargar el historial de notificaciones
+    useEffect(() => {
+        if (user?.id) {
+            notificacionService.getHistorial(user.id)
+                .then(res => {
+                        setNotificaciones(res.data)
+                })
+                .catch(error => console.error("Error cargando historial de notificaciones", error))
+        }
+    }, [user?.id, setNotificaciones]);
 
     return (
         <div>
