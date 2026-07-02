@@ -1,0 +1,145 @@
+/* Reset global de margenes y fondo */
+html, body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    background-color: #f8fafc;
+}
+
+/* Contenedor principal del Dashboard */
+.dashboard-container {
+    padding: 2rem;
+    background-color: #f8fafc;
+    min-height: calc(100vh - 70px - 4rem); /* Resta la Navbar para evitar scroll */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #0A0F1E;
+    box-sizing: border-box; /* Mantiene el padding dentro de la caja */
+}
+
+/* Header principal */
+.dashboard-header {
+    background-color: #0A0F1E;
+    color: #E4F0F6;
+    padding: 1.5rem 2rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 20px rgba(10, 15, 30, 0.15);
+}
+
+.dashboard-header h1 {
+    margin: 0;
+    font-size: 1.8rem;
+    font-weight: 600;
+}
+
+.dashboard-header p {
+    margin: 0.4rem 0 0 0;
+}
+
+/* Layout de dos columnas en paralelo */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    align-items: start;
+}
+
+/* Modo responsivo para pantallas pequeñas */
+@media (max-width: 768px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Tarjetas o contenedores tipo card */
+.dashboard-card {
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.dashboard-card h3 {
+    margin-top: 0;
+    margin-bottom: 1.25rem;
+    font-size: 1.25rem;
+    border-bottom: 2px solid #E4F0F6;
+    padding-bottom: 0.75rem;
+    color: #0A0F1E;
+}
+
+/* Lista de productos */
+.product-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.product-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid #f1f5f9;
+    transition: background-color 0.2s;
+}
+
+.product-item:last-child {
+    border-bottom: none;
+}
+
+.product-item:hover {
+    background-color: #E4F0F6;
+    border-radius: 8px;
+}
+
+.product-price {
+    font-weight: bold;
+    color: #0A0F1E;
+    background-color: #E4F0F6;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+}
+
+/* Panel de notificaciones */
+.notification-panel {
+    background-color: #ffffff;
+}
+
+.notification-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.notification-item {
+    padding: 1rem;
+    background-color: #fff5f5;
+    border-left: 4px solid #ef4444;
+    border-radius: 0 8px 8px 0;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.notification-message {
+    color: #991b1b;
+    font-weight: 600;
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.notification-details {
+    color: #64748b;
+    font-size: 0.85rem;
+}
+
+/* Mensaje cuando no hay alertas en la lista */
+.no-alerts {
+    color: #64748b;
+    text-align: center;
+    padding: 2rem 0;
+    font-style: italic;
+    margin: 0;
+}
