@@ -1,14 +1,15 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { AuthContext } from '../context/AuthContext';
-import { useWebSocket } from '../hooks/useWebSocket';
+import React, {useContext, useEffect, useState} from 'react';
+import {AuthContext} from '../context/AuthContext';
+import {useWebSocket} from '../hooks/useWebSocket';
 import {notificacionService, productoService} from '../services/api';
+import './Dashboard.css';
 
 const DashBoard = () => {
-    const { user } = useContext(AuthContext);
+    const {user} = useContext(AuthContext);
     const [productos, setProductos] = useState([]);
 
     // Conectamos al WebSocket usando el ID del usuario logueado
-    const { notificaciones, setNotificaciones, conectado } = useWebSocket(user?.id);
+    const {notificaciones, setNotificaciones, conectado} = useWebSocket(user?.id);
 
     // Cargamos los productos de la BD
     useEffect(() => {
@@ -22,51 +23,58 @@ const DashBoard = () => {
         if (user?.id) {
             notificacionService.getHistorial(user.id)
                 .then(res => {
-                        setNotificaciones(res.data)
+                    setNotificaciones(res.data)
                 })
                 .catch(error => console.error("Error cargando historial de notificaciones", error))
         }
     }, [user?.id, setNotificaciones]);
 
     return (
-        <div>
-            <h1>Dashboard - Bienvenido, {user?.nombre}</h1>
-            <p>Estado del Servidor en Tiempo Real: {conectado ? "🟢 Conectado" : "🔴 Desconectado"}</p>
+        <div className="dashboard-container">
+            <div className="dashboard-header">
+                <h1>Dashboard - Bienvenido, {user?.nombre}</h1>
+                <p>Estado del Servidor en Tiempo Real: {conectado ? "🟢 Conectado" : "🔴 Desconectado"}</p>
+            </div>
 
-            <div style={{ display: 'flex', gap: '2rem', marginTop: '1rem' }}>
-
-                {/* Productos */}
-                <div style={{ flex: 1 }}>
+            {/* Seccion de productos */}
+            <div className="dashboard-grid">
+                <div className="dashboard-card">
                     <h3>Productos Activos</h3>
-                    <ul>
+                    <ul className="product-list">
                         {productos.map(prod => (
-                            <li key={prod.id}>
-                                <strong>{prod.nombre}</strong> — {prod.precioActual}€
+                            <li key={prod.id} className="product-item">
+                                <span>{prod.nombre}</span>
+                                <span className="product-price">{prod.precioActual.toFixed(2)}€</span>
                             </li>
                         ))}
                     </ul>
                 </div>
 
-                {/* Notificaciones */}
-                <div style={{ flex: 1, background: '#f0f0f0', padding: '1rem' }}>
+
+                {/* Seccion de notificaciones */
+                }
+                <div className="dashboard-card notification-panel">
                     <h3>Alertas Disparadas (Kafka ⚡ WebSocket)</h3>
                     {notificaciones.length === 0 ? (
-                        <p>Esperando a que baje algún precio...</p>
+                        <p className="no-alerts">Esperando a que baje algún precio...</p>
                     ) : (
-                        <ul>
+                        <ul className="notification-list">
                             {notificaciones.map((notif, index) => (
-                                <li key={index} style={{ marginBottom: '10px', color: 'darkred' }}>
-                                    <strong>{notif.mensaje}</strong> <br />
-                                    <small>Actual: {notif.precioActual}€ | Tu Objetivo: {notif.precioObjetivo}€</small>
+                                <li key={index} className="notification-item">
+                                    <span className="notification-message">{notif.mensaje}</span>
+                                    <div className="notification-details">
+                                        Actual: <strong>{notif.precioActual}€</strong> |
+                                        Objetivo: <strong>{notif.precioObjetivo}€</strong>
+                                    </div>
                                 </li>
                             ))}
                         </ul>
                     )}
                 </div>
-
             </div>
         </div>
-    );
+    )
+        ;
 };
 
 export default DashBoard;
