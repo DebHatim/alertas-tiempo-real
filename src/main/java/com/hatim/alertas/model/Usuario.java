@@ -2,6 +2,8 @@ package com.hatim.alertas.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Data
@@ -20,4 +22,11 @@ public class Usuario {
 
     @Column(nullable = false)
     private String password; // Contrasena del usuario
+
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Alerta> alertas = new ArrayList<>();
+
+    // Relacion con Notificaciones: Si el usuario se elimina, su historial tambien
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Notificacion> notificaciones = new ArrayList<>();
 }

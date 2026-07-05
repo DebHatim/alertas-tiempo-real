@@ -2,6 +2,11 @@ package com.hatim.alertas.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import java.math.BigDecimal;
 
 @Entity
@@ -15,6 +20,9 @@ public class Alerta {
 
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Usuario usuario; // Usuario que crea la alerta
 
     @ManyToOne
