@@ -17,7 +17,7 @@ const Navbar = () => {
 
                 {/* Enlaces de navegacion con clase activa dinamica */}
                 <div className="navbar-links">
-                    <Link to="/" className={`nav-link ${location.pathname === '/' ? 'active' : ''}`}>
+                    <Link to="/" className={`nav-link ${location.pathname === '/' || location.pathname === '/dashboard' ? 'active' : ''}`}>
                         Dashboard
                     </Link>
                     <Link to="/alertas" className={`nav-link ${location.pathname === '/alertas' ? 'active' : ''}`}>
