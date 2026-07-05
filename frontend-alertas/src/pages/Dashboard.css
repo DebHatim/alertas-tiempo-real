@@ -143,3 +143,12 @@ html, body {
     font-style: italic;
     margin: 0;
 }
+
+/* Mensaje alternativo cuando la lista de productos esta vacia */
+.no-products {
+    color: #64748b;
+    text-align: center;
+    padding: 2rem 0;
+    font-style: italic;
+    margin: 0;
+}

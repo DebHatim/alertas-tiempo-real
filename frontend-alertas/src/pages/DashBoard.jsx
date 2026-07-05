@@ -41,12 +41,19 @@ const DashBoard = () => {
                 <div className="dashboard-card">
                     <h3>Productos Activos</h3>
                     <ul className="product-list">
-                        {productos.map(prod => (
-                            <li key={prod.id} className="product-item">
-                                <span>{prod.nombre}</span>
-                                <span className="product-price">{prod.precioActual.toFixed(2)}€</span>
-                            </li>
-                        ))}
+                        {productos.length > 0 ? (
+                            productos.map((prod) => (
+                                <li key={prod.id} className="product-item">
+                                    <span>{prod.nombre}</span>
+                                    <span className="product-price">
+                                        {typeof prod.precioActual === 'number' ?
+                                            prod.precioActual.toFixed(2) : Number(prod.precioActual).toFixed(2)}€
+                                    </span>
+                                </li>
+                            ))
+                        ) : (
+                            <p className="no-products">Sin productos activos para mostrar en este momento.</p>
+                        )}
                     </ul>
                 </div>
 
