@@ -8,9 +8,10 @@ const api = axios.create({
     headers: {'Content-Type': 'application/json',}, // Datos viajan en formato JSON
 });
 
-// Servicio para registrar usuario
+// Servicios para autenticar usuarios
 export const authService = {
     registro: (userData) => api.post('/auth/registro', userData),
+    login: (userData) => api.post('/auth/login', userData),
 };
 
 // Servicio para obtener productos dependiendo de los parametros
