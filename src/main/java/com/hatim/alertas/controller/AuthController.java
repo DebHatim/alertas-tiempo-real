@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -38,10 +40,31 @@ public class AuthController {
         return ResponseEntity.status(201).body(guardado);
     }
 
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+        Optional<Usuario> usuarioOpcional = usuarioRepository.findByEmail(request.getEmail());
+
+        if (usuarioOpcional.isEmpty()) {
+            return ResponseEntity.status(401).body("Credenciales invalidas");
+        }
+
+        Usuario usuario = usuarioOpcional.get();
+        if (!passwordEncoder.matches(request.getPassword(), usuario.getPassword())) {
+            return ResponseEntity.status(401).body("Credenciales invalidas");
+        }
+        return ResponseEntity.ok(usuario);
+    }
+
     // Clase interna para leer el JSON del body del registro
     @Data
-    private static class RegistroRequest {
+    public static class RegistroRequest {
         private String nombre;
+        private String email;
+        private String password;
+    }
+
+    @Data
+    public static class LoginRequest {
         private String email;
         private String password;
     }
