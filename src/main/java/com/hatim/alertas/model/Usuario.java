@@ -1,5 +1,6 @@
 package com.hatim.alertas.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.util.ArrayList;
@@ -24,9 +25,11 @@ public class Usuario {
     private String password; // Contrasena del usuario
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<Alerta> alertas = new ArrayList<>();
 
     // Relacion con Notificaciones: Si el usuario se elimina, su historial tambien
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<Notificacion> notificaciones = new ArrayList<>();
 }

@@ -47,6 +47,8 @@ public class NotificacionService {
         Notificacion notificacion = new Notificacion();
         notificacion.setUsuario(usuario);
         notificacion.setMensaje(mensaje);
+        notificacion.setPrecioActual(evento.getPrecioActual());
+        notificacion.setPrecioObjetivo(precioObjetivo);
         notificacion.setFecha(LocalDateTime.now());
         notificacion.setLeida(false);
         notificacionRepository.save(notificacion);

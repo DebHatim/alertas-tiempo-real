@@ -7,6 +7,7 @@ import lombok.ToString;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -27,6 +28,12 @@ public class Notificacion {
 
     @Column(nullable = false)
     private String mensaje; // Mensaje mostrando el cambio del precio del producto
+
+    @Column(nullable = true)
+    private BigDecimal precioActual;
+
+    @Column(nullable = true)
+    private BigDecimal precioObjetivo;
 
     @Column(nullable = false)
     private Boolean leida = false; // Usuario puede marcar notificación como leida o como no leida
