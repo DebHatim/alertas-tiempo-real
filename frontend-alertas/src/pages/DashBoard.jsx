@@ -57,9 +57,7 @@ const DashBoard = () => {
                     </ul>
                 </div>
 
-
-                {/* Seccion de notificaciones */
-                }
+                {/* Seccion de notificaciones */}
                 <div className="dashboard-card notification-panel">
                     <h3>Alertas Disparadas (Kafka ⚡ WebSocket)</h3>
                     {notificaciones.length === 0 ? (
