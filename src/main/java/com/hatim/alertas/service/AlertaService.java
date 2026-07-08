@@ -56,8 +56,15 @@ public class AlertaService {
         Alerta alerta = alertaRepository.findById(alertaId).orElseThrow(() -> new RuntimeException("Alerta no encontrada"));
 
         // Establecer estado de la alerta a desactivada
-        alerta.setActiva(false);
+        alerta.setActiva(!alerta.getActiva());
         alertaRepository.save(alerta);
+    }
+
+    public void eliminarAlerta(Long alertaId) {
+        if (!alertaRepository.existsById(alertaId)) {
+            throw new RuntimeException("Alerta no encontrada");
+        }
+        alertaRepository.deleteById(alertaId);
     }
 
     // Metodo para convertir a DTO y asi ahorrar lineas de codigo

@@ -30,9 +30,16 @@ public class AlertaController {
         return alertaService.obtenerAlertasUsuario(usuarioId);
     }
 
-    // Metodo DELETE para desactivar una alerta
+    // Metodo DELETE para eliminar una alerta
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> desactivar(@PathVariable Long id) {
+    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+        alertaService.eliminarAlerta(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    // Metodo PUT para activar o desactivar una alerta
+    @PutMapping("/{id}/toggle")
+    public ResponseEntity<Void> cambiarEstado(@PathVariable Long id) {
         alertaService.desactivarAlerta(id);
         // 204 No Content
         return ResponseEntity.noContent().build();
