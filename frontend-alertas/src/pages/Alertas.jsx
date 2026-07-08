@@ -21,10 +21,13 @@ const Alertas = () => {
 
     // Metodo para recoger los productos y alertas al arrancar
     useEffect(() => {
-        if (user?.id) {
-            cargarProductos();
-            cargarAlertasUsuario();
-        }
+        const arrancarDatos = async () => {
+            if (user && user.id) {
+                await cargarProductos();
+                await cargarAlertasUsuario();
+            }
+        };
+        arrancarDatos();
     }, [user]);
 
     // Metodo para consultar los productos disponibles
@@ -61,14 +64,14 @@ const Alertas = () => {
 
         try {
             await alertaService.crear({
-                usuario: { id: user.id },
-                producto: { id: parseInt(productoSeleccionado) },
+                usuarioId: user.id,
+                productoId: parseInt(productoSeleccionado),
                 precioObjetivo: parseFloat(precioObjetivo),
                 activa: true
             });
             setPrecioObjetivo('');
             setSuccess('Alerta configurada correctamente');
-            cargarAlertasUsuario();
+            await cargarAlertasUsuario();
         } catch (err) {
             setError('No se pudo crear la alerta');
         }
@@ -78,9 +81,21 @@ const Alertas = () => {
     const handleDesactivar = async (id) => {
         try {
             await alertaService.desactivar(id);
-            cargarAlertasUsuario();
-        } catch (err) {
-            console.error('Error al desactivar', err);
+            await cargarAlertasUsuario();
+        } catch (error) {
+            console.error('Error al desactivar', error);
+        }
+    };
+
+    const handleEliminar = async (id) => {
+        try {
+            if (window.confirm("¿Seguro que quieres borrar definitivamente esta alerta?")) {
+                await alertaService.eliminar(id);
+                // Al borrarla físicamente, la quitamos del estado local para que desaparezca visualmente
+                setAlertas(prev => prev.filter(alerta => alerta.id !== id));
+            }
+        } catch (error) {
+            console.error('Error al eliminar la alerta', error);
         }
     };
 
@@ -119,26 +134,32 @@ const Alertas = () => {
 
             {/* Monitoreo */}
             <div className="alerts-card">
-                <h3>Mis Alertas Activas</h3>
+                <h3>Mis Alertas Configuradas</h3>
                 {alertas.length > 0 ? (
                     <div className="alerts-grid">
                         {alertas.map(alerta => (
                             <div key={alerta.id} className="alert-item-card">
                                 <div className="alert-item-info">
-                                    <h4>{alerta.producto?.nombre}</h4>
+                                    <h4>{alerta.productoNombre}</h4>
                                     <p>Precio Objetivo: <strong>{alerta.precioObjetivo}€</strong></p>
                                     <span className={`status-badge ${alerta.activa ? 'active' : 'inactive'}`}>
-                                        {alerta.activa ? 'Monitoreando' : 'Inactiva'}
-                                    </span>
+                                    {alerta.activa ? 'Monitoreando 🟢' : 'Pausada 🟡'}</span>
                                 </div>
-                                <button onClick={() => handleDesactivar(alerta.id)} className="btn-delete-alert">
-                                    Eliminar
-                                </button>
+                                <div className="alert-actions">
+                                    <button onClick={() => handleDesactivar(alerta.id)}
+                                        className={`btn-toggle-alert ${alerta.activa ? 'btn-pause' : 'btn-resume'}`}>
+                                        {alerta.activa ? 'Pausar' : 'Activar'}
+                                    </button>
+
+                                    <button onClick={() => handleEliminar(alerta.id)} className="btn-delete-alert">
+                                        Eliminar
+                                    </button>
+                                </div>
                             </div>
                         ))}
                     </div>
                 ) : (
-                    <p className="no-alerts">No tienes alertas configuradas todavia.</p>
+                    <p className="no-alerts">No tienes alertas configuradas todavía.</p>
                 )}
             </div>
         </div>

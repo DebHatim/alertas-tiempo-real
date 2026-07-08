@@ -24,7 +24,8 @@ export const productoService = {
 export const alertaService = {
     crear: (alertaData) => api.post('/alertas', alertaData),
     getByUsuario: (usuarioId) => api.get(`/alertas/usuario/${usuarioId}`),
-    desactivar: (id) => api.delete(`/alertas/${id}`),
+    desactivar: (id) => api.put(`/alertas/${id}/toggle`),
+    eliminar: (id) => api.delete(`/alertas/${id}`),
 };
 
 // Servicio para manejar las notificaciones dependiendo de los parametros
