@@ -132,17 +132,58 @@
     color: #0369a1;
 }
 
-/* Boton eliminar alerta */
-.btn-delete-alert {
-    background-color: transparent;
-    color: #ef4444;
-    border: 1px solid #fca5a5;
+.status-badge.inactive {
+    background-color: #f1f5f9;
+    color: #475569;
+}
+
+/* Contenedor de la botonera doble */
+.alert-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+/* Estilo base compartido para los botones de la tarjeta */
+.btn-toggle-alert, .btn-delete-alert {
     padding: 0.4rem 0.8rem;
     border-radius: 6px;
     font-weight: 600;
     font-size: 0.85rem;
     cursor: pointer;
-    transition: background-color 0.2s, color 0.2s;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+    box-sizing: border-box;
+}
+
+/* Variación del botón dinámico cuando dice: "Pausar" */
+.btn-pause {
+    background-color: transparent;
+    color: #d97706;
+    border: 1px solid #fcd34d;
+}
+
+.btn-pause:hover {
+    background-color: #fef3c7;
+    color: #b45309;
+}
+
+/* Variación del botón dinámico cuando dice: "Activar" */
+.btn-resume {
+    background-color: transparent;
+    color: #16a34a;
+    border: 1px solid #86efac;
+}
+
+.btn-resume:hover {
+    background-color: #dcfce7;
+    color: #15803d;
+}
+
+/* Boton eliminar alerta */
+.btn-delete-alert {
+    background-color: transparent;
+    color: #ef4444;
+    border: 1px solid #fca5a5;
 }
 
 .btn-delete-alert:hover {
