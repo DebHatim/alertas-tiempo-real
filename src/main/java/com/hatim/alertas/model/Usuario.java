@@ -22,6 +22,7 @@ public class Usuario {
     private String email; // Correo electronico del usuario
 
     @Column(nullable = false)
+    @JsonIgnore
     private String password; // Contrasena del usuario
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
