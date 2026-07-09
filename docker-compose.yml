@@ -61,7 +61,10 @@ services:
       - alertas-network
 
   frontend:
-    build: ./frontend-alertas
+    build:
+      context: ./frontend-alertas
+      args:
+        VITE_API_URL: http://localhost:8080/api
     container_name: alertas-frontend
     ports:
       - "80:80"

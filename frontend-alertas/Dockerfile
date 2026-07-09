@@ -6,6 +6,8 @@ RUN npm install
 COPY . .
 
 # Compilar el proyecto
+ARG VITE_API_URL
+ENV VITE_API_URL=$VITE_API_URL
 RUN npm run build
 
 # 2 - Servir con Nginx
