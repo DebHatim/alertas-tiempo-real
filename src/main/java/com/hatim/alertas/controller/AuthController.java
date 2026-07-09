@@ -2,6 +2,8 @@ package com.hatim.alertas.controller;
 
 import com.hatim.alertas.model.Usuario;
 import com.hatim.alertas.repository.UsuarioRepository;
+import com.hatim.alertas.security.JwtUtils;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +20,7 @@ public class AuthController {
 
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtils jwtUtils;
 
     // Metodo para registrar un usuario nuevo
     @PostMapping("/registro")
@@ -52,10 +55,13 @@ public class AuthController {
         if (!passwordEncoder.matches(request.getPassword(), usuario.getPassword())) {
             return ResponseEntity.status(401).body("Credenciales invalidas");
         }
-        return ResponseEntity.ok(usuario);
+
+        String token = jwtUtils.generarToken(usuario.getEmail(), usuario.getId());
+
+        return ResponseEntity.ok(new LoginResponse(usuario.getId(), usuario.getNombre(), usuario.getEmail(), token));
     }
 
-    // Clase interna para leer el JSON del body del registro
+    // Clases internas para leer el JSON del body del registro y el login
     @Data
     public static class RegistroRequest {
         private String nombre;
@@ -67,5 +73,15 @@ public class AuthController {
     public static class LoginRequest {
         private String email;
         private String password;
+    }
+
+    // Clase interna autenticacion login con token
+    @Data
+    @AllArgsConstructor
+    public static class LoginResponse {
+        private Long id;
+        private String nombre;
+        private String email;
+        private String token;
     }
 }
