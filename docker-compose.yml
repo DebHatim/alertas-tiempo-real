@@ -11,6 +11,11 @@ services:
       - mysql_data:/var/lib/mysql
     networks:
       - alertas-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   zookeeper:
     image: confluentinc/cp-zookeeper:7.5.0
@@ -29,7 +34,6 @@ services:
       - "9092:9092"
     environment:
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      # Permitir que se conecte tanto el backend dentro de Docker como desde fuera
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
@@ -43,14 +47,16 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - mysql
-      - kafka
+      mysql:
+        condition: service_healthy
+      kafka:
+        condition: service_started
     environment:
       - DB_URL=jdbc:mysql://mysql:3306/alertas
       - DB_USERNAME=root
       - DB_PASSWORD=
       - KAFKA_SERVERS=kafka:29092
-      - APP_CORS_ALLOWED_ORIGIN=http://localhost:80 # URL frontend en Docker
+      - APP_CORS_ALLOWED_ORIGIN=http://localhost:80
     networks:
       - alertas-network
 
@@ -63,6 +69,22 @@ services:
       - backend
     environment:
       - VITE_API_URL=http://localhost:8080/api
+    networks:
+      - alertas-network
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: alertas-phpmyadmin
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_ARBITRARY: 1 # Para poder conectar sin contrasena obligatoria
+    ports:
+      - "8081:80"
+    depends_on:
+      mysql:
+        condition: service_healthy
     networks:
       - alertas-network
 
