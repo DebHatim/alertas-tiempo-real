@@ -8,6 +8,8 @@ import com.hatim.alertas.repository.AlertaRepository;
 import com.hatim.alertas.repository.ProductoRepository;
 import com.hatim.alertas.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.kafka.common.errors.ResourceNotFoundException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -51,18 +53,23 @@ public class AlertaService {
                 .collect(Collectors.toList()); // Guardar resultado en una lista
     }
 
-    public void desactivarAlerta(Long alertaId) {
+    public void desactivarAlerta(Long alertaId, Long autenticadoId) {
         // Busca si la alerta existe. si no existe, lanza excepcion
-        Alerta alerta = alertaRepository.findById(alertaId).orElseThrow(() -> new RuntimeException("Alerta no encontrada"));
+        Alerta alerta = alertaRepository.findById(alertaId).orElseThrow(() -> new ResourceNotFoundException("Alerta no encontrada"));
 
+        if (!alerta.getUsuario().getId().equals(autenticadoId)) {
+            throw new AccessDeniedException("No tienes permisos para modificar esta alerta");
+        }
         // Establecer estado de la alerta a desactivada
         alerta.setActiva(!alerta.getActiva());
         alertaRepository.save(alerta);
     }
 
-    public void eliminarAlerta(Long alertaId) {
-        if (!alertaRepository.existsById(alertaId)) {
-            throw new RuntimeException("Alerta no encontrada");
+    public void eliminarAlerta(Long alertaId, Long autenticadoId) {
+        Alerta alerta = alertaRepository.findById(alertaId).orElseThrow(() -> new ResourceNotFoundException("Alerta no encontrada"));
+
+        if (!alerta.getUsuario().getId().equals(autenticadoId)) {
+            throw new AccessDeniedException("No tienes permisos para eliminar esta alerta");
         }
         alertaRepository.deleteById(alertaId);
     }
