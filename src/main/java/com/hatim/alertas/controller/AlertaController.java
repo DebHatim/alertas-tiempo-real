@@ -2,6 +2,7 @@ package com.hatim.alertas.controller;
 
 import com.hatim.alertas.dto.AlertaDTO;
 import com.hatim.alertas.service.AlertaService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -17,7 +18,7 @@ public class AlertaController {
 
     // Metodo para crear una alerta nueva
     @PostMapping
-    public ResponseEntity<?> crear(@RequestBody AlertaDTO dto, Authentication authentication) {
+    public ResponseEntity<?> crear(@Valid @RequestBody AlertaDTO dto, Authentication authentication) {
         Long autenticadoId = (Long) authentication.getPrincipal(); // Extraer el ID inyectado en el filtro
         dto.setUsuarioId(autenticadoId);
         AlertaDTO creada = alertaService.crearAlerta(dto);
