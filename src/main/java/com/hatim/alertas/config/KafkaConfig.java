@@ -5,6 +5,7 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
@@ -19,7 +20,8 @@ import java.util.Map;
 public class KafkaConfig {
 
     // Direccion donde funciona Kafka
-    private static final String BOOTSTRAP_SERVERS = "localhost:9092";
+    @Value("${spring.kafka.bootstrap-servers}")
+    private String bootstrapServers;
 
     // Configuracion de los productores de Kafka
     @Bean
@@ -27,7 +29,7 @@ public class KafkaConfig {
         Map<String, Object> config = new HashMap<>();
 
         // Establecer como atributo el servidor donde funciona Kafka
-        config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
+        config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
 
         // Serializar la key como String - StringSerializer.class
         config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
@@ -50,7 +52,7 @@ public class KafkaConfig {
         Map<String, Object> config = new HashMap<>();
 
         // Establecer como atributo el servidor donde funciona Kafka
-        config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
+        config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
 
         // Identificador del grupo de consumidores
         config.put(ConsumerConfig.GROUP_ID_CONFIG, "alertas-group");
