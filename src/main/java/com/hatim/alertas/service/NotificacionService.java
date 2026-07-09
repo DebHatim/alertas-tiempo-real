@@ -69,4 +69,20 @@ public class NotificacionService {
         // Log test
         log.info("Notificación enviada por WebSocket al usuario {}", usuario.getId());
     }
+
+    @Transactional
+    public Notificacion marcarComoLeida(Long notificacionId, Long autenticadoId) {
+        // Buscar la notificacion
+        Notificacion notificacion = notificacionRepository.findById(notificacionId)
+                .orElseThrow(() -> new RuntimeException("Notificación no encontrada"));
+
+        // Validar que la notificacion pertenezca al usuario autenticado
+        if (!notificacion.getUsuario().getId().equals(autenticadoId)) {
+            throw new org.springframework.security.access.AccessDeniedException("No tienes permiso para modificar esta notificación");
+        }
+
+        // Modificar estado y guardar
+        notificacion.setLeida(true);
+        return notificacionRepository.save(notificacion);
+    }
 }
