@@ -33,7 +33,7 @@ const DashBoard = () => {
         <div className="dashboard-container">
             <div className="dashboard-header">
                 <h1>Dashboard - Bienvenido, {user?.nombre}</h1>
-                <p>Estado del Servidor en Tiempo Real: {conectado ? "🟢 Conectado" : "🔴 Desconectado"}</p>
+                <p>Notificaciones en vivo: {conectado ? "🟢 Activas" : "🔴 Inactivas"}</p>
             </div>
 
             {/* Seccion de productos */}
@@ -59,7 +59,7 @@ const DashBoard = () => {
 
                 {/* Seccion de notificaciones */}
                 <div className="dashboard-card notification-panel">
-                    <h3>Alertas Disparadas (Kafka ⚡ WebSocket)</h3>
+                    <h3>Notificaciones</h3>
                     {notificaciones.length === 0 ? (
                         <p className="no-alerts">Esperando a que baje algún precio...</p>
                     ) : (
