@@ -3,6 +3,9 @@ package com.hatim.alertas.controller;
 import com.hatim.alertas.model.Usuario;
 import com.hatim.alertas.repository.UsuarioRepository;
 import com.hatim.alertas.security.JwtUtils;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +27,7 @@ public class AuthController {
 
     // Metodo para registrar un usuario nuevo
     @PostMapping("/registro")
-    public ResponseEntity<?> registro(@RequestBody RegistroRequest request) {
+    public ResponseEntity<?> registro(@Valid @RequestBody RegistroRequest request) {
 
         // Comprobar si el email ya existe
         if (usuarioRepository.findByEmail(request.getEmail()).isPresent()) {
@@ -44,7 +47,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
         Optional<Usuario> usuarioOpcional = usuarioRepository.findByEmail(request.getEmail());
 
         if (usuarioOpcional.isEmpty()) {
@@ -64,14 +67,24 @@ public class AuthController {
     // Clases internas para leer el JSON del body del registro y el login
     @Data
     public static class RegistroRequest {
+        @NotBlank(message = "El nombre es obligatorio")
         private String nombre;
+
+        @NotBlank(message = "El email es obligatorio")
+        @Email(message = "El formato del email no es valido")
         private String email;
+
+        @NotBlank(message = "La contraseña es obligatoria")
         private String password;
     }
 
     @Data
     public static class LoginRequest {
+        @NotBlank(message = "El email es obligatorio")
+        @Email(message = "El formato del email no es valido")
         private String email;
+
+        @NotBlank(message = "La contraseña es obligatoria")
         private String password;
     }
 
