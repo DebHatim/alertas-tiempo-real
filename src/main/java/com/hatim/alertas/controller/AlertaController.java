@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/alertas")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:5173")
 public class AlertaController {
 
     private final AlertaService alertaService;
