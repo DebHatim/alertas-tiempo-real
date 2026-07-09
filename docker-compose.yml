@@ -1,17 +1,76 @@
 version: '3.8'
+
 services:
+  mysql:
+    image: mysql:8.0
+    container_name: alertas-mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: alertas
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes" # Mantiene la configuración actual sin contrasena
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - alertas-network
+
   zookeeper:
     image: confluentinc/cp-zookeeper:7.5.0
+    container_name: alertas-zookeeper
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
+    networks:
+      - alertas-network
 
   kafka:
     image: confluentinc/cp-kafka:7.5.0
+    container_name: alertas-kafka
     depends_on:
       - zookeeper
     ports:
       - "9092:9092"
     environment:
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      # Permitir que se conecte tanto el backend dentro de Docker como desde fuera
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - alertas-network
+
+  backend:
+    build: .
+    container_name: alertas-backend
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+      - kafka
+    environment:
+      - DB_URL=jdbc:mysql://mysql:3306/alertas
+      - DB_USERNAME=root
+      - DB_PASSWORD=
+      - KAFKA_SERVERS=kafka:29092
+      - APP_CORS_ALLOWED_ORIGIN=http://localhost:80 # URL frontend en Docker
+    networks:
+      - alertas-network
+
+  frontend:
+    build: ./frontend-alertas
+    container_name: alertas-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    environment:
+      - VITE_API_URL=http://localhost:8080/api
+    networks:
+      - alertas-network
+
+volumes:
+  mysql_data:
+
+networks:
+  alertas-network:
+    driver: bridge
