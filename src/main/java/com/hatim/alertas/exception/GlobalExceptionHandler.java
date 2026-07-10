@@ -1,5 +1,6 @@
 package com.hatim.alertas.exception;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -11,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
 
     // Metodo que intercepta errores en @Valid
@@ -38,7 +40,9 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<Map<String, String>> handleRuntime() {
+    public ResponseEntity<Map<String, String>> handleRuntime(RuntimeException ex) {
+        log.error("Error critico no controlado en la aplicacion", ex);
+
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(Map.of("error", "Ha ocurrido un error inesperado"));
     }
