@@ -62,7 +62,7 @@ public class NotificacionService {
                 evento.getProductoNombre(),
                 precioObjetivo,
                 evento.getPrecioActual(),
-                LocalDateTime.now(), // Guardar momento en el que se notifica el nuevo precio
+                notificacion.getFecha(), // Guardar momento en el que se notifica el nuevo precio
                 false // Notificacion recien creada por lo tanto no leida
         );
 
