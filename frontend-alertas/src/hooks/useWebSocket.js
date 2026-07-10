@@ -23,7 +23,6 @@ export const useWebSocket = (usuarioId) => {
         stompClient.onConnect = (frame) => {
             // Log comprobacion conexion
             setConectado(true);
-            console.log('Conectado a WebSocket con éxito!');
 
             // Indicar canal de suscripcion
             stompClient.subscribe(`/topic/notificaciones/${usuarioId}`, (message) => {
