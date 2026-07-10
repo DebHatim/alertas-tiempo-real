@@ -4,6 +4,7 @@ import com.hatim.alertas.security.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -56,9 +57,11 @@ public class SecurityConfig {
                         // Endpoints publicos - sin autenticacion
                         .requestMatchers(
                                 "/api/auth/**", // registro y login
-                                "/ws/**", // websocket
-                                "/api/productos" // pagina indice para ver productos
+                                "/ws/**" // websocket
                         ).permitAll()
+
+                        .requestMatchers(HttpMethod.GET, "/api/productos").permitAll() // pagina indice para ver productos
+
                         .requestMatchers("/api/alertas/**", "/api/notificaciones/**").authenticated()
                         .anyRequest().authenticated()
                 ).addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
