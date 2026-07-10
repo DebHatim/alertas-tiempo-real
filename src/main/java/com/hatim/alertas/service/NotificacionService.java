@@ -30,16 +30,6 @@ public class NotificacionService {
             PrecioEventoDTO evento, // Datos del cambio de precio
             BigDecimal precioObjetivo) { // Precio objetivo que configuro el usuario
 
-        // Filtrar para anti spam - comprobacion de 5 minutos
-        LocalDateTime cincominutos = LocalDateTime.now().minusMinutes(5);
-        boolean yaNotificado = notificacionRepository.comprobarDuplicadoReciente(usuario.getId(), evento.getProductoNombre(), cincominutos);
-
-        // Si ya esta notificado, se sale del metodo y bloquea el WebSocket
-        if (yaNotificado) {
-            log.info("Alerta omitida para usuario {}", usuario.getId());
-            return;
-        }
-
         // Si se debe notificar se construye el mensaje
         String mensaje = String.format("%s ha bajado de tu precio objetivo a %s€",
                 evento.getProductoNombre(),evento.getPrecioActual()

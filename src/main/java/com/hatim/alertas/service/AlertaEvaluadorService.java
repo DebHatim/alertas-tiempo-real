@@ -53,6 +53,8 @@ public class AlertaEvaluadorService {
 
                 // LLama al servicio que envia por WebSocket al frontend
                 notificacionService.enviarNotificacion(alerta.getUsuario(), evento, alerta.getPrecioObjetivo());
+                alerta.setActiva(false);
+                alertaRepository.save(alerta);
 
                 // Log test
                 log.info("Alerta disparada para usuario {}", alerta.getUsuario().getId());
