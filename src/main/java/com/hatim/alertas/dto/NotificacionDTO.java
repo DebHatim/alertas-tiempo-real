@@ -10,10 +10,12 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class NotificacionDTO {
+    private Long id;
     private Long usuarioId;
     private String mensaje;
     private String productoNombre;
     private BigDecimal precioObjetivo;
     private BigDecimal precioActual;
     private LocalDateTime fecha;
+    private Boolean leida;
 }

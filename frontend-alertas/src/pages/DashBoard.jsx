@@ -29,6 +29,18 @@ const DashBoard = () => {
         }
     }, [user?.id, setNotificaciones]);
 
+    // Metodo para gestionar marcar notificaciones como leidas
+    const handleMarcarLeida = async (id) => {
+        try {
+            await notificacionService.marcarLeida(id);
+            setNotificaciones(prev =>
+                prev.map(n => n.id === id ? { ...n, leida: true } : n)
+            );
+        } catch (error) {
+            console.error('Error al marcar como leída', error);
+        }
+    };
+
     return (
         <div className="dashboard-container">
             <div className="dashboard-header">
@@ -65,12 +77,17 @@ const DashBoard = () => {
                     ) : (
                         <ul className="notification-list">
                             {notificaciones.map((notif, index) => (
-                                <li key={index} className="notification-item">
+                                <li key={notif.id ?? index} className={`notification-item ${notif.leida ? 'leida' : ''}`}>
                                     <span className="notification-message">{notif.mensaje}</span>
                                     <div className="notification-details">
                                         Actual: <strong>{notif.precioActual}€</strong> |
                                         Objetivo: <strong>{notif.precioObjetivo}€</strong>
                                     </div>
+                                    {!notif.leida && (
+                                        <button className="btn-marcar-leida" onClick={() => handleMarcarLeida(notif.id)}>
+                                            Marcar como leída
+                                        </button>
+                                    )}
                                 </li>
                             ))}
                         </ul>
