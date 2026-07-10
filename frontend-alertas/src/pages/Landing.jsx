@@ -16,7 +16,7 @@ const Landing = () => {
                     No vuelvas a perderte una bajada de precio ni las mejores ofertas del mercado.
                 </p>
 
-                <button onClick={() => navigate('/dashboard')} className="btn-enter">
+                <button onClick={() => navigate('/login')} className="btn-enter">
                     Entrar
                 </button>
             </div>
