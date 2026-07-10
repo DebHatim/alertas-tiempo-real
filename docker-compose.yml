@@ -70,8 +70,6 @@ services:
       - "80:80"
     depends_on:
       - backend
-    environment:
-      - VITE_API_URL=http://localhost:8080/api
     networks:
       - alertas-network
 
