@@ -2,6 +2,7 @@ package com.hatim.alertas.service;
 
 import com.hatim.alertas.dto.NotificacionDTO;
 import com.hatim.alertas.dto.PrecioEventoDTO;
+import com.hatim.alertas.exception.ResourceNotFoundException;
 import com.hatim.alertas.model.Notificacion;
 import com.hatim.alertas.model.Usuario;
 import com.hatim.alertas.repository.NotificacionRepository;
@@ -74,7 +75,7 @@ public class NotificacionService {
     public Notificacion marcarComoLeida(Long notificacionId, Long autenticadoId) {
         // Buscar la notificacion
         Notificacion notificacion = notificacionRepository.findById(notificacionId)
-                .orElseThrow(() -> new RuntimeException("Notificación no encontrada"));
+                .orElseThrow(() -> new ResourceNotFoundException("Notificación no encontrada"));
 
         // Validar que la notificacion pertenezca al usuario autenticado
         if (!notificacion.getUsuario().getId().equals(autenticadoId)) {

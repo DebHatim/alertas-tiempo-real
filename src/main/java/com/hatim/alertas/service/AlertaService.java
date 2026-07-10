@@ -27,10 +27,10 @@ public class AlertaService {
     public AlertaDTO crearAlerta(AlertaDTO dto) {
 
         // Comprobar que el usuario existe. si no existe, lanzar excepcion
-        Usuario usuario = usuarioRepository.findById(dto.getUsuarioId()).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        Usuario usuario = usuarioRepository.findById(dto.getUsuarioId()).orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
 
         // Comprobar que el producto existe. si no existe, lanzar excepcion
-        Producto producto = productoRepository.findById(dto.getProductoId()).orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+        Producto producto = productoRepository.findById(dto.getProductoId()).orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado"));
 
         // Crear entidad alerta con los datos recibidos
         Alerta alerta = new Alerta();
