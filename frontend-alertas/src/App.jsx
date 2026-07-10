@@ -5,6 +5,7 @@ import Auth from './pages/Auth.jsx'
 import DashBoard from './pages/DashBoard'
 import Alertas from './pages/Alertas'
 import Navbar from "./components/Navbar.jsx";
+import Landing from "./pages/Landing.jsx";
 
 function App() {
     const {user} = useContext(AuthContext)
@@ -13,6 +14,12 @@ function App() {
         <Router>
             <Navbar />
             <Routes>
+                {/* Ruta Landing publica */}
+                <Route
+                    path="/"
+                    element={!user ? <Landing/> : <Navigate to="/dashboard"/>}
+                />
+
                 {/* Ruta Login/Registro */}
                 <Route
                     path="/login"
@@ -32,7 +39,7 @@ function App() {
                 {/* Redireccion por defecto */}
                 <Route
                     path="*"
-                    element={<Navigate to={user ? "/dashboard" : "/login"}/>}
+                    element={<Navigate to={user ? "/dashboard" : "/"}/>}
                 />
             </Routes>
         </Router>
