@@ -1,6 +1,7 @@
 package com.hatim.alertas.service;
 
 import com.hatim.alertas.dto.AlertaDTO;
+import com.hatim.alertas.exception.ResourceNotFoundException;
 import com.hatim.alertas.model.Alerta;
 import com.hatim.alertas.model.Producto;
 import com.hatim.alertas.model.Usuario;
@@ -8,7 +9,6 @@ import com.hatim.alertas.repository.AlertaRepository;
 import com.hatim.alertas.repository.ProductoRepository;
 import com.hatim.alertas.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
-import org.apache.kafka.common.errors.ResourceNotFoundException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
