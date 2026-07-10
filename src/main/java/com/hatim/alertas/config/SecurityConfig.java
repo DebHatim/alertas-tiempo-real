@@ -60,7 +60,7 @@ public class SecurityConfig {
                                 "/ws/**" // websocket
                         ).permitAll()
 
-                        .requestMatchers(HttpMethod.GET, "/api/productos").permitAll() // pagina indice para ver productos
+                        .requestMatchers(HttpMethod.GET, "/api/productos", "/api/productos/**").permitAll() // pagina indice para ver productos
 
                         .requestMatchers("/api/alertas/**", "/api/notificaciones/**").authenticated()
                         .anyRequest().authenticated()
