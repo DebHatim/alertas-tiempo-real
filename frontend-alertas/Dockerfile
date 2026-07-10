@@ -16,6 +16,9 @@ FROM nginx:alpine
 # Copiar los archivos compilados a la carpeta que sirve Nginx
 COPY --from=build /app/dist /usr/share/nginx/html
 
+# Para rutas de React Router
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
 # Copiar una configuración basica si fuera necesario, o usamos la de por defecto
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
