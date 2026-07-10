@@ -17,8 +17,6 @@ export const useWebSocket = (usuarioId) => {
             webSocketFactory: () => new SockJS('http://localhost:8080/ws'),
             // Reconectar cada 5s si cae backend
             reconnectDelay: 5000,
-            // Imprimir trafico en consola
-            debug: (str) => console.log('STOMP Debug:', str),
         });
 
         // onConnect = callback
