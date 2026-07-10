@@ -3,6 +3,8 @@ package com.hatim.alertas.security;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -13,17 +15,25 @@ import java.util.Date;
 public class JwtUtils {
 
     // Clave secreta harcodeada para desarrollo
-    private static final String SECRET_KEY_STRING = "esta_es_una_clave_secreta_muy_larga_y_segura_para_el_algoritmo_hs256";
-    private static final SecretKey SECRET_KEY = Keys.hmacShaKeyFor(SECRET_KEY_STRING.getBytes(StandardCharsets.UTF_8));
+    @Value("${app.jwt.secret:esta_es_una_clave_secreta_muy_larga_y_segura_para_el_algoritmo_hs256}")
+    private String secretKeyString;
+
+    private SecretKey secretKey;
 
     // Expiracion de token en 24 horas
     private static final long EXPIRATION_TIME = 86400000;
+
+    // Metodo para establecer la key, se ejecuta automaticamente
+    @PostConstruct
+    public void init() {
+        this.secretKey = Keys.hmacShaKeyFor(secretKeyString.getBytes(StandardCharsets.UTF_8));
+    }
 
     // Metodo para generar el token guardando el email como principal y mete usuarioId dentro del "payload"
     public String generarToken(String email, Long usuarioId) {
         return Jwts.builder().subject(email).claim("usuarioId", usuarioId)
                 .issuedAt(new Date()).expiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                .signWith(SECRET_KEY).compact();
+                .signWith(secretKey).compact();
     }
 
     // Metodo para abrir el token y extraer el propietario
@@ -47,6 +57,6 @@ public class JwtUtils {
 
     // Metodo que usa la clave secreta para verificar la firma
     private Claims extraerClaims(String token) {
-        return Jwts.parser().verifyWith(SECRET_KEY).build().parseSignedClaims(token).getPayload();
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload();
     }
 }
