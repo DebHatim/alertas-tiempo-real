@@ -6,17 +6,15 @@ html, body {
     background-color: #f8fafc;
 }
 
-/* Contenedor principal del Dashboard */
 .dashboard-container {
     padding: 2rem;
     background-color: #f8fafc;
-    min-height: calc(100vh - 70px - 4rem); /* Resta la Navbar para evitar scroll */
+    min-height: calc(100vh - 70px - 4rem);
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     color: #0A0F1E;
-    box-sizing: border-box; /* Mantiene el padding dentro de la caja */
+    box-sizing: border-box;
 }
 
-/* Header principal */
 .dashboard-header {
     background-color: #0A0F1E;
     color: #E4F0F6;
@@ -36,7 +34,6 @@ html, body {
     margin: 0.4rem 0 0 0;
 }
 
-/* Layout de dos columnas en paralelo */
 .dashboard-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -44,14 +41,12 @@ html, body {
     align-items: start;
 }
 
-/* Modo responsivo para pantallas pequeñas */
 @media (max-width: 768px) {
     .dashboard-grid {
         grid-template-columns: 1fr;
     }
 }
 
-/* Tarjetas o contenedores tipo card */
 .dashboard-card {
     background-color: #ffffff;
     border: 1px solid #e2e8f0;
@@ -69,7 +64,6 @@ html, body {
     color: #0A0F1E;
 }
 
-/* Lista de productos */
 .product-list {
     list-style: none;
     padding: 0;
@@ -103,7 +97,6 @@ html, body {
     font-size: 0.9rem;
 }
 
-/* Panel de notificaciones */
 .notification-panel {
     background-color: #ffffff;
 }
@@ -135,7 +128,6 @@ html, body {
     font-size: 0.85rem;
 }
 
-/* Mensaje cuando no hay alertas en la lista */
 .no-alerts {
     color: #64748b;
     text-align: center;
@@ -144,11 +136,38 @@ html, body {
     margin: 0;
 }
 
-/* Mensaje alternativo cuando la lista de productos esta vacia */
 .no-products {
     color: #64748b;
     text-align: center;
     padding: 2rem 0;
     font-style: italic;
     margin: 0;
+}
+
+.btn-marcar-leida {
+    background-color: transparent;
+    color: #0A0F1E;
+    border: 1px solid #cbd5e1;
+    padding: 0.35rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 0.5rem;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.btn-marcar-leida:hover {
+    background-color: #E4F0F6;
+    border-color: #0A0F1E;
+}
+
+.notification-item.leida {
+    background-color: #f8fafc;
+    border-left-color: #cbd5e1;
+    opacity: 0.7;
+}
+
+.notification-item.leida .notification-message {
+    color: #64748b;
 }
