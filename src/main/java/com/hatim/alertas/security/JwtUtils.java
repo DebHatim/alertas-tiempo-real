@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -12,6 +13,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 @Component
+@Slf4j
 public class JwtUtils {
 
     // Clave secreta harcodeada para desarrollo
@@ -51,6 +53,7 @@ public class JwtUtils {
         try {
             return extraerClaims(token).getExpiration().after(new Date());
         } catch (Exception e) {
+            log.warn("Error validando token JWT: {}", e.getMessage());
             return false;
         }
     }

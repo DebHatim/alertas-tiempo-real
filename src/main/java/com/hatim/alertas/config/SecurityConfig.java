@@ -54,15 +54,17 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable) // CSRF desactivado para pruebas
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // Endpoints publicos - sin autenticacion
-                        .requestMatchers(
-                                "/api/auth/**", // registro y login
-                                "/ws/**" // websocket
-                        ).permitAll()
+                        // Permitir OPTIONS para que funcione CORS de navegador
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
+                        // Endpoints publicos - sin autenticacion // ws es websocket
+                        .requestMatchers("/api/auth/**", "/ws/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/productos", "/api/productos/**").permitAll() // pagina indice para ver productos
 
+                        // Endpoints que necesitan autenticacion explicita
                         .requestMatchers("/api/alertas/**", "/api/notificaciones/**").authenticated()
+
+                        // El resto protegido
                         .anyRequest().authenticated()
                 ).addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();

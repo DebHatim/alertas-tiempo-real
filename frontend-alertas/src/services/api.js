@@ -8,6 +8,28 @@ const api = axios.create({
     headers: {'Content-Type': 'application/json',}, // Datos viajan en formato JSON
 });
 
+api.interceptors.request.use(
+    (config) => {
+        const storedUser = localStorage.getItem('usuario_alertas');
+
+        if (storedUser) {
+            try {
+                const userData = JSON.parse(storedUser);
+
+                if (userData && userData.token) {
+                    config.headers.Authorization = `Bearer ${userData.token}`;
+                }
+            } catch (error) {
+                console.error("Error parseando el usuario", error)
+            }
+        }
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
+    }
+)
+
 // Servicios para autenticar usuarios
 export const authService = {
     registro: (userData) => api.post('/auth/registro', userData),
