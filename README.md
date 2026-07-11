@@ -13,7 +13,7 @@ Plataforma donde los usuarios configuran alertas personalizadas sobre productos 
 
 ## Arquitectura
 
-![Diagrama de Arquitectura](assets/arquitectura.svg)
+![Diagrama de Arquitectura](assets/arquitectura-v2.svg)
 
 Autenticación: el login emite un JWT firmado (HS256) que el frontend adjunta en cada petición. Un filtro (`JwtAuthenticationFilter`) valida el token y expone el id del usuario autenticado a los controladores. Las rutas de alertas y notificaciones comprueban que el recurso solicitado pertenece al usuario del token, no al id que venga en la URL.
 
