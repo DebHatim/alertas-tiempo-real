@@ -15,17 +15,17 @@ Plataforma donde los usuarios configuran alertas personalizadas sobre productos 
 
 ```
 Simulador de precios (@Scheduled, cada 5s)
-        ↓
-  Kafka · topic: price-events
-        ↓
-  Consumidor · evalúa alertas activas por producto
-        ↓
-  WebSocket (STOMP) · notifica solo al usuario dueño de la alerta
-        ↓
-  Dashboard React · notificación en tiempo real, sin recargar
+  ↓
+Kafka · topic: price-events
+  ↓
+Consumidor · evalúa alertas activas por producto
+  ↓
+WebSocket (STOMP) · notifica solo al usuario dueño de la alerta
+  ↓
+Dashboard React · notificación en tiempo real, sin recargar
 ```
 
-Autenticación: el login emite un JWT firmado (HS256) que el frontend adjunta en cada petición. Un filtro (`JwtAuthenticationFilter`) valida el token y expone el id del usuario autenticado a los controladores las rutas de alertas y notificaciones comprueban que el recurso solicitado pertenece al usuario del token, no al id que venga en la URL.
+Autenticación: el login emite un JWT firmado (HS256) que el frontend adjunta en cada petición. Un filtro (`JwtAuthenticationFilter`) valida el token y expone el id del usuario autenticado a los controladores. Las rutas de alertas y notificaciones comprueban que el recurso solicitado pertenece al usuario del token, no al id que venga en la URL.
 
 ## Stack
 
@@ -75,13 +75,13 @@ cd alertas-tiempo-real
 docker compose up -d
 ```
 
-Ese único comando levanta MySQL, Zookeeper, Kafka, el backend Spring Boot y el frontend nada de instalar Java, Maven, Node ni configurar bases de datos a mano.
+Ese único comando levanta MySQL, Zookeeper, Kafka, el backend Spring Boot y el frontend. Sin necsidad de instalar Java, Maven, Node ni configurar bases de datos a mano.
 
 - Frontend: `http://localhost`
 - Backend API: `http://localhost:8080/api`
 - phpMyAdmin (opcional, inspeccionar BD): `http://localhost:8081`
 
-> MySQL corre sin contraseña y phpMyAdmin con acceso arbitrario configuración pensada solo para desarrollo local, no para un despliegue expuesto a internet.
+> MySQL corre sin contraseña y phpMyAdmin con acceso arbitrario, una configuración pensada solo para desarrollo local, no para un despliegue expuesto a internet.
 
 <details>
 <summary>Desarrollo del backend sin Docker (opcional)</summary>
@@ -102,9 +102,20 @@ npm run dev
 Variables de entorno relevantes: `KAFKA_SERVERS`, `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, `APP_CORS_ALLOWED_ORIGIN` (backend) y `VITE_API_URL` (frontend, build-time).
 </details>
 
+## Testing
+
+Cobertura con **JUnit 5 + Mockito** sobre la lógica de negocio, sin infraestructura externa (no requiere Kafka ni MySQL levantados):
+
+- `AlertaServiceTest` - creación de alertas, listado por usuario, y control de propiedad al desactivar/eliminar (incluye el caso de un usuario intentando modificar una alerta que no es suya).
+- `AlertaEvaluadorServiceTest` - lógica del consumidor de Kafka: producto inexistente, disparo y desactivación automática al cumplirse el objetivo, no-disparo si el precio sigue por encima, y filtrado correcto cuando varias alertas compiten sobre el mismo producto.
+
+```bash
+./mvnw test
+```
+
 ## Roadmap / pendiente
 
-- Tests unitarios de servicios (`AlertaService`, `NotificacionService`) con Mockito
+- Tests de `NotificacionService` y del controller layer
 - Pipeline CI/CD básico con GitHub Actions
 - Restringir origen del endpoint WebSocket en producción (actualmente `*`)
 
