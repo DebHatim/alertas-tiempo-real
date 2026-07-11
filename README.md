@@ -13,17 +13,7 @@ Plataforma donde los usuarios configuran alertas personalizadas sobre productos 
 
 ## Arquitectura
 
-```
-Simulador de precios (@Scheduled, cada 5s)
-  ↓
-Kafka · topic: price-events
-  ↓
-Consumidor · evalúa alertas activas por producto
-  ↓
-WebSocket (STOMP) · notifica solo al usuario dueño de la alerta
-  ↓
-Dashboard React · notificación en tiempo real, sin recargar
-```
+![Diagrama de Arquitectura](assets/arquitectura.svg)
 
 Autenticación: el login emite un JWT firmado (HS256) que el frontend adjunta en cada petición. Un filtro (`JwtAuthenticationFilter`) valida el token y expone el id del usuario autenticado a los controladores. Las rutas de alertas y notificaciones comprueban que el recurso solicitado pertenece al usuario del token, no al id que venga en la URL.
 
