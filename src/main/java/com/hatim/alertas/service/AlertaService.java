@@ -32,6 +32,11 @@ public class AlertaService {
         // Comprobar que el producto existe. si no existe, lanzar excepcion
         Producto producto = productoRepository.findById(dto.getProductoId()).orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado"));
 
+        List<Alerta> alertasActivas = alertaRepository.findByProductoAndActivaTrue(producto);
+        if (!alertasActivas.isEmpty()) {
+            throw new IllegalStateException("Ya tienes una alerta activa para este producto");
+        }
+
         // Crear entidad alerta con los datos recibidos
         Alerta alerta = new Alerta();
         alerta.setUsuario(usuario);

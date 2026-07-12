@@ -107,6 +107,29 @@ class AlertaServiceTest {
     }
 
     @Test
+    void crearAlertaConAlertaYaActivaLanzaExcepcion() {
+        Usuario usuario = new Usuario();
+        usuario.setId(1L);
+        Producto producto = new Producto();
+        producto.setId(2L);
+
+        // Cuando se ejecute "findById(1L)" devolver el usuario
+        when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
+        // Cuando se ejecute "findById(2L)" devolver el producto
+        when(productoRepository.findById(2L)).thenReturn(Optional.of(producto));
+
+        // Simular que el repositorio encuentra una alerta ya activa para este producto
+        when(alertaRepository.findByProductoAndActivaTrue(producto)).thenReturn(List.of(new Alerta()));
+
+        AlertaDTO dto = new AlertaDTO();
+        dto.setUsuarioId(1L);
+        dto.setProductoId(2L);
+
+        // Verificar que lanza IllegalStateException al intentar duplicar la alerta activa
+        assertThrows(IllegalStateException.class, () -> alertaService.crearAlerta(dto));
+    }
+
+    @Test
     void obtenerAlertasUsuarioDevuelveListaDeDTOs() {
         Usuario usuario = new Usuario();
         usuario.setId(1L);
