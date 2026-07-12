@@ -6,6 +6,7 @@
 [![React](https://img.shields.io/badge/React-19-61DAFB)](https://react.dev/)
 [![Docker](https://img.shields.io/badge/Docker-Compose-2496ED)](https://www.docker.com/)
 [![JWT](https://img.shields.io/badge/Auth-JWT-black)]()
+[![CI](https://github.com/DebHatim/alertas-tiempo-real/actions/workflows/ci.yml/badge.svg)](https://github.com/DebHatim/alertas-tiempo-real/actions/workflows/ci.yml)
 
 Plataforma donde los usuarios configuran alertas personalizadas sobre productos y reciben notificaciones en tiempo real cuando el precio baja de su objetivo. Arquitectura orientada a eventos con Apache Kafka como núcleo del sistema, autenticación stateless con JWT y notificaciones push vía WebSocket.
 
