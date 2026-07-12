@@ -98,7 +98,7 @@ Variables de entorno relevantes: `KAFKA_SERVERS`, `DB_URL`, `DB_USERNAME`, `DB_P
 Cobertura con **JUnit 5 + Mockito** sobre la lógica de negocio, sin infraestructura externa (no requiere Kafka ni MySQL levantados):
 
 - `AlertaServiceTest` - creación de alertas, listado por usuario, y control de propiedad al desactivar/eliminar (incluye el caso de un usuario intentando modificar una alerta que no es suya).
-- `AlertaEvaluadorServiceTest` - lógica del consumidor de Kafka: producto inexistente, disparo y desactivación automática al cumplirse el objetivo, no-disparo si el precio sigue por encima, y filtrado correcto cuando varias alertas compiten sobre el mismo producto.
+* `NotificacionServiceTest` - despacho de alertas en tiempo real: persistencia del historial en base de datos, validación de lectura/autorización de propiedad, y envío reactivo mediante WebSockets.
 
 ```bash
 ./mvnw test
@@ -106,8 +106,8 @@ Cobertura con **JUnit 5 + Mockito** sobre la lógica de negocio, sin infraestruc
 
 ## Roadmap / pendiente
 
-- Tests de `NotificacionService` y del controller layer
-- Pipeline CI/CD básico con GitHub Actions
+- Tests de `AlertaEvaluadorService` (lógica del consumidor de Kafka y disparo de alertas)
+- Tests del `controller layer`
 - Restringir origen del endpoint WebSocket en producción (actualmente `*`)
 
 ## Autor
