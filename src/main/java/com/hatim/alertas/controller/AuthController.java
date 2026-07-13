@@ -42,12 +42,16 @@ public class AuthController {
         Usuario usuario = new Usuario();
         usuario.setNombre(request.getNombre());
         usuario.setEmail(request.getEmail());
-
         // Cifrar contraseña con BCrypt antes de guardar a BD
         usuario.setPassword(passwordEncoder.encode(request.getPassword()));
 
         Usuario guardado = usuarioRepository.save(usuario);
-        return ResponseEntity.status(201).body(guardado);
+
+        String token = jwtUtils.generarToken(guardado.getEmail(), guardado.getId());
+
+        return ResponseEntity.status(201).body(
+                new LoginResponse(guardado.getId(), guardado.getNombre(), guardado.getEmail(), token)
+        );
     }
 
     @PostMapping("/login")
