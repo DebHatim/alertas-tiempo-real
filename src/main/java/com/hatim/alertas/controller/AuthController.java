@@ -3,6 +3,8 @@ package com.hatim.alertas.controller;
 import com.hatim.alertas.model.Usuario;
 import com.hatim.alertas.repository.UsuarioRepository;
 import com.hatim.alertas.security.JwtUtils;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -19,6 +21,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
+@Tag(name = "Autenticación", description = "Endpoints para el registro e inicio de sesión de usuarios")
 public class AuthController {
 
     private final UsuarioRepository usuarioRepository;
@@ -27,6 +30,7 @@ public class AuthController {
 
     // Metodo para registrar un usuario nuevo
     @PostMapping("/registro")
+    @Operation(summary = "Registrar un usuario nuevo", description = "Crea un nuevo usuario en el sistema cifrando su contraseña.")
     public ResponseEntity<?> registro(@Valid @RequestBody RegistroRequest request) {
 
         // Comprobar si el email ya existe
@@ -47,6 +51,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
+    @Operation(summary = "Iniciar sesión", description = "Autentica al usuario y devuelve un token JWT válido.")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
         Optional<Usuario> usuarioOpcional = usuarioRepository.findByEmail(request.getEmail());
 
