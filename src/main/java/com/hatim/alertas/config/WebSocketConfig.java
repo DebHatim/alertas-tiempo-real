@@ -31,6 +31,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         // Endpoint WebSocket al que React se conectara
         // withSockJS() anade fallback para navegadores que no soporten WebSocket
-        registry.addEndpoint("/ws").setAllowedOriginPatterns(allowedOrigins).withSockJS();
+        String[] originsArray = allowedOrigins.split(",");
+        registry.addEndpoint("/ws").setAllowedOriginPatterns(originsArray).withSockJS();
     }
 }
