@@ -10,11 +10,15 @@ export const useWebSocket = (usuarioId) => {
 
     useEffect(() => {
         if (!usuarioId) return;
+        
+        // Obtener la URL base de la API y limpiar la ruta '/api' si existiera para conectar al WS
+        const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+        const wsUrl = `${baseUrl.replace(/\/api$/, '')}/ws`;
 
         // Inicializar el cliente STOMP para comunicar con el endpoint de Spring Boot
         const stompClient = new Client({
             // Se usa SockJS
-            webSocketFactory: () => new SockJS('http://localhost:8080/ws'),
+            webSocketFactory: () => new SockJS(wsUrl),
             // Reconectar cada 5s si cae backend
             reconnectDelay: 5000,
         });
