@@ -106,6 +106,9 @@ class AuthControllerTest {
         // Assert
         // Verificar que la respuesta sea codigo Successful
         assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
+
+        // Verificar que el cuerpo no este vacio
+        assertThat(response.getBody()).isNotNull();
         // Verificar que el token dentro de la respuesta sea el mismo
         AuthController.LoginResponse body = (AuthController.LoginResponse) response.getBody();
         assertThat(body.getToken()).isEqualTo("token-falso");
