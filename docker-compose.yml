@@ -44,6 +44,12 @@ services:
   backend:
     build: .
     container_name: alertas-backend
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 20s # Esperar 20 segundos antes de comprobar
     ports:
       - "8080:8080"
     depends_on:
@@ -69,7 +75,8 @@ services:
     ports:
       - "80:80"
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     networks:
       - alertas-network
 
