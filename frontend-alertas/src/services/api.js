@@ -8,6 +8,7 @@ const api = axios.create({
     headers: {'Content-Type': 'application/json',}, // Datos viajan en formato JSON
 });
 
+// Interceptor para inyectar el token en las peticiones que salen
 api.interceptors.request.use(
     (config) => {
         const storedUser = localStorage.getItem('usuario_alertas');
@@ -29,6 +30,33 @@ api.interceptors.request.use(
         return Promise.reject(error);
     }
 )
+
+// Interceptor para capturar respuestas de error
+api.interceptors.response.use(
+    (response) => {
+        // Si las respuesta es correcta (codigo 2xx)
+        return response;
+    },
+    (error) => {
+        // Comprobar si el servidor ha respondido con un error
+        if (error.response) {
+            const status = error.response.status;
+
+            // Si el estado es 401 o 403
+            if (status === 401 || status === 403) {
+                console.warn("La sesión ha expirado o el token no es válido.");
+
+                // Eliminar la clave del usuario del almacenamiento local
+                localStorage.removeItem('usuario_alertas');
+
+                // Redirigir al login para salir
+                window.location.href = "/login";
+            }
+        }
+        // Devolver el error
+        return Promise.reject(error);
+    }
+);
 
 // Servicios para autenticar usuarios
 export const authService = {
