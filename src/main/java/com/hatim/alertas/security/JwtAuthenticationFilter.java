@@ -36,8 +36,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             // Comprueba la firma y la fecha de caducidad
             if (jwtUtils.validarToken(token)) {
-                // Extraer el email y el id del usuario
-                String email = jwtUtils.extraerEmail(token);
+                // Extraer el id del usuario
                 Long usuarioId = jwtUtils.extraerUsuarioId(token);
 
                 // Creamos un objeto de autenticacion personalizado portando el ID del usuario como principal
@@ -49,6 +48,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 // Establecerlo en el contexto
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
+            else {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setContentType("application/json");
+                response.getWriter().write("{\"error\": \"El token ha caducado o no es valido. Inicie sesion de nuevo.\"}");
+                return;
             }
         }
 
