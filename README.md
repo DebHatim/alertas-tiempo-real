@@ -21,7 +21,7 @@ over WebSocket.
 
 ## Demo
 
-![Real-time notification flow demo](assets/screenshots/demo.gif)
+![Real-time notification flow demo](assets/screenshots/demo-v2.gif)
 
 *Creating an alert, then watching the notification arrive live over
 WebSocket the moment the simulated price drops below target, no page

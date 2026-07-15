@@ -21,7 +21,7 @@ autenticación stateless con JWT y notificaciones push vía WebSocket.
 
 ## Demo
 
-![Demostración del flujo de notificaciones en tiempo real](assets/screenshots/demo.gif)
+![Demostración del flujo de notificaciones en tiempo real](assets/screenshots/demo-v2.gif)
 
 *Crear una alerta y luego ver la notificación llegar en tiempo real a través de WebSocket en el momento en que el precio
 simulado cae por debajo del objetivo, sin actualizar la página.*
