@@ -23,7 +23,11 @@ function App() {
                 {/* Ruta Login/Registro */}
                 <Route
                     path="/login"
-                    element={!user ? <Auth/> : <Navigate to="/dashboard"/>}
+                    element={!user ? <Auth defaultLogin={true}/> : <Navigate to="/dashboard"/>}
+                />
+                <Route
+                    path="/registro"
+                    element={!user ? <Auth defaultLogin={false}/> : <Navigate to="/dashboard"/>}
                 />
 
                 {/* Rutas privadas del usuario */}
