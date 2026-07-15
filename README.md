@@ -13,37 +13,42 @@
 [![OpenAPI](https://img.shields.io/badge/API%20Docs-Swagger-85EA2D)]()
 [![CI](https://github.com/DebHatim/alertas-tiempo-real/actions/workflows/ci.yml/badge.svg)](https://github.com/DebHatim/alertas-tiempo-real/actions/workflows/ci.yml)
 
-A platform where users set custom alerts on products and get real-time
-notifications when the price drops below their target. Event-driven
-architecture with Apache Kafka at its core, stateless JWT authentication,
-and push notifications over WebSocket.
+A platform where users set custom alerts on products and get real-time notifications when the price drops below their
+target. Event-driven architecture with Apache Kafka at its core, stateless JWT authentication, and push notifications
+over WebSocket.
 
 ---
 
+## Demo
+
+![Real-time notification flow demo](assets/screenshots/demo.gif)
+
+*Creating an alert, then watching the notification arrive live over
+WebSocket the moment the simulated price drops below target, no page
+refresh.*
+
 ## Architecture
 
-![Architecture Diagram](assets/arquitectura-v2.svg)
+![Architecture Diagram](assets/arquitectura-en.svg)
 
-Authentication: login issues a signed JWT (HS256) that the frontend attaches
-to every request. A filter (`JwtAuthenticationFilter`) validates the token
-and exposes the authenticated user's id to the controllers. Alert and
-notification routes check that the requested resource belongs to the user
-in the token, not the id passed in the URL.
+Authentication: login issues a signed JWT (HS256) that the frontend attaches to every request. A filter (
+`JwtAuthenticationFilter`) validates the token and exposes the authenticated user's id to the controllers. Alert and
+notification routes check that the requested resource belongs to the user in the token, not the id passed in the URL.
 
 ## Stack
 
-| Layer | Technology |
-|-------|-----------|
-| Backend | Java 21 · Spring Boot 3.5 |
-| Messaging | Apache Kafka · Zookeeper |
-| Security | Spring Security 6 · JWT (JJWT) · BCrypt · Rate limiting (Bucket4j) |
-| Persistence | JPA/Hibernate · MySQL 8 |
-| Real-time | WebSocket · STOMP · SockJS |
-| API Docs | springdoc-openapi (Swagger UI) |
-| Observability | Spring Boot Actuator (health checks) |
-| Frontend | React 19 · React Router · Axios |
+| Layer          | Technology                                                              |
+|----------------|-------------------------------------------------------------------------|
+| Backend        | Java 21 · Spring Boot 3.5                                               |
+| Messaging      | Apache Kafka · Zookeeper                                                |
+| Security       | Spring Security 6 · JWT (JJWT) · BCrypt · Rate limiting (Bucket4j)      |
+| Persistence    | JPA/Hibernate · MySQL 8                                                 |
+| Real-time      | WebSocket · STOMP · SockJS                                              |
+| API Docs       | springdoc-openapi (Swagger UI)                                          |
+| Observability  | Spring Boot Actuator (health checks)                                    |
+| Frontend       | React 19 · React Router · Axios                                         |
 | Infrastructure | Docker Compose (MySQL, Kafka, Zookeeper, backend, frontend, phpMyAdmin) |
-| Build | Maven · Lombok |
+| Build          | Maven · Lombok                                                          |
 
 ## Features
 
@@ -59,6 +64,21 @@ in the token, not the id passed in the URL.
 - Interactive API documentation via Swagger UI
 - Health check endpoint used by Docker Compose to gate service startup order
 - Public landing page + login/registration flow separate from the private area
+
+## Screenshots
+
+<table>
+  <tr>
+    <td width="50%">
+      <img src="assets/screenshots/dashboard.png" alt="Dashboard with products and live notifications" />
+      <p align="center"><em>Dashboard: active products and real-time notification feed</em></p>
+    </td>
+    <td width="50%">
+      <img src="assets/screenshots/alertas.png" alt="Alerts page" />
+      <p align="center"><em>Alerts page: create, pause/resume, and delete price alerts</em></p>
+    </td>
+  </tr>
+</table>
 
 ## Design decisions
 
@@ -124,6 +144,7 @@ just those two with `docker compose up -d mysql kafka zookeeper`).
 ```
 
 And for the frontend:
+
 ```bash
 cd frontend-alertas
 npm install
@@ -142,13 +163,13 @@ infrastructure required (no need for Kafka or MySQL running):
 
 - `AlertaServiceTest` - alert creation, listing by user, and ownership checks
   when pausing/deleting (including the case of a user attempting to modify
-  an alert that isn't theirs).
+  an alert that isn't theirs)
 - `AlertaEvaluadorServiceTest` - Kafka consumer logic and alert triggering
-  against target prices.
+  against target prices
 - `NotificacionServiceTest` - real-time alert dispatch: history persistence,
-  read/ownership validation, and reactive delivery via WebSocket.
+  read/ownership validation, and reactive delivery via WebSocket
 - Controller layer tests for `AlertaController`, `NotificacionController`,
-  `AuthController`, and `ProductoController`.
+  `AuthController`, and `ProductoController`
 
 ```bash
 ./mvnw test
@@ -156,6 +177,35 @@ infrastructure required (no need for Kafka or MySQL running):
 
 Every push to `main` and every pull request runs the full suite via GitHub
 Actions.
+
+<details>
+<summary>Technical captures</summary>
+<br>
+
+<table>
+  <tr>
+    <td style="width: 33%">
+      <img src="assets/screenshots/tests-passing.png" alt="Test suite passing" />
+      <p align="center"><em>Full test suite passing locally</em></p>
+    </td>
+    <td style="width: 33%">
+      <img src="assets/screenshots/rate-limit-429.png" alt="Rate limiting response" />
+      <p align="center"><em>Rate limiting returning 429 after repeated login attempts</em></p>
+    </td>
+    <td style="width: 33%">
+      <img src="assets/screenshots/swagger-ui.png" alt="Swagger UI" />
+      <p align="center"><em>API documented and explorable via Swagger UI</em></p>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="3">
+      <img src="assets/screenshots/docker-compose-up.png" alt="Docker Compose starting all services" />
+      <p align="center"><em>Full stack spinning up with a single <code>docker compose up -d</code></em></p>
+    </td>
+  </tr>
+</table>
+
+</details>
 
 ## Roadmap
 
