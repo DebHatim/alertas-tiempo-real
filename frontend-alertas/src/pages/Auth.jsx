@@ -36,10 +36,22 @@ const Auth = () => {
 
             // Pasar el usuario al contexto global
             login(usuarioGuardado);
-        } catch (err) {
-            console.error(err);
-            // Control de errores
-            setError(err.response?.data || 'Hubo un error en la autenticacion');
+        } catch (error) {
+            console.error(error);
+
+            const responseData = error.response?.data;
+
+            if (responseData) {
+                if (typeof responseData === 'object' && !Array.isArray(responseData)) {
+                    const mensajes = Object.values(responseData).join('. ');
+                    setError(mensajes);
+                } else {
+                    setError(responseData);
+                }
+            }
+            else {
+                setError("Hubo un error en la autenticación");
+            }
         }
     };
 
