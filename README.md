@@ -1,4 +1,8 @@
-# Sistema de Alertas de Precios en Tiempo Real
+🇬🇧 English (you are here) | 🇪🇸 [Leer en Español](README.es.md)
+
+---
+
+# Real-Time Price Alerts System
 
 [![Java](https://img.shields.io/badge/Java-21-blue)](https://openjdk.org/projects/jdk/21/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5-brightgreen)](https://spring.io/projects/spring-boot)
@@ -6,59 +10,87 @@
 [![React](https://img.shields.io/badge/React-19-61DAFB)](https://react.dev/)
 [![Docker](https://img.shields.io/badge/Docker-Compose-2496ED)](https://www.docker.com/)
 [![JWT](https://img.shields.io/badge/Auth-JWT-black)]()
+[![OpenAPI](https://img.shields.io/badge/API%20Docs-Swagger-85EA2D)]()
 [![CI](https://github.com/DebHatim/alertas-tiempo-real/actions/workflows/ci.yml/badge.svg)](https://github.com/DebHatim/alertas-tiempo-real/actions/workflows/ci.yml)
 
-Plataforma donde los usuarios configuran alertas personalizadas sobre productos y reciben notificaciones en tiempo real cuando el precio baja de su objetivo. Arquitectura orientada a eventos con Apache Kafka como núcleo del sistema, autenticación stateless con JWT y notificaciones push vía WebSocket.
+A platform where users set custom alerts on products and get real-time
+notifications when the price drops below their target. Event-driven
+architecture with Apache Kafka at its core, stateless JWT authentication,
+and push notifications over WebSocket.
 
 ---
 
-## Arquitectura
+## Architecture
 
-![Diagrama de Arquitectura](assets/arquitectura-v2.svg)
+![Architecture Diagram](assets/arquitectura-v2.svg)
 
-Autenticación: el login emite un JWT firmado (HS256) que el frontend adjunta en cada petición. Un filtro (`JwtAuthenticationFilter`) valida el token y expone el id del usuario autenticado a los controladores. Las rutas de alertas y notificaciones comprueban que el recurso solicitado pertenece al usuario del token, no al id que venga en la URL.
+Authentication: login issues a signed JWT (HS256) that the frontend attaches
+to every request. A filter (`JwtAuthenticationFilter`) validates the token
+and exposes the authenticated user's id to the controllers. Alert and
+notification routes check that the requested resource belongs to the user
+in the token, not the id passed in the URL.
 
 ## Stack
 
-| Capa | Tecnología |
-|------|-----------|
+| Layer | Technology |
+|-------|-----------|
 | Backend | Java 21 · Spring Boot 3.5 |
-| Mensajería | Apache Kafka · Zookeeper |
-| Seguridad | Spring Security 6 · JWT (JJWT) · BCrypt |
-| Persistencia | JPA/Hibernate · MySQL 8 |
-| Tiempo real | WebSocket · STOMP · SockJS |
+| Messaging | Apache Kafka · Zookeeper |
+| Security | Spring Security 6 · JWT (JJWT) · BCrypt · Rate limiting (Bucket4j) |
+| Persistence | JPA/Hibernate · MySQL 8 |
+| Real-time | WebSocket · STOMP · SockJS |
+| API Docs | springdoc-openapi (Swagger UI) |
+| Observability | Spring Boot Actuator (health checks) |
 | Frontend | React 19 · React Router · Axios |
-| Infraestructura | Docker Compose (MySQL, Kafka, Zookeeper, backend, frontend, phpMyAdmin) |
+| Infrastructure | Docker Compose (MySQL, Kafka, Zookeeper, backend, frontend, phpMyAdmin) |
 | Build | Maven · Lombok |
 
-## Funcionalidades
+## Features
 
-- Registro y login con JWT, contraseñas cifradas con BCrypt
-- Autorización a nivel de recurso: cada usuario solo puede ver/modificar sus propias alertas y notificaciones
-- Gestión de alertas por producto y precio objetivo (crear, pausar/reactivar, eliminar)
-- Simulador de cambios de precio con variación aleatoria cada 5 segundos
-- Evaluación de alertas en tiempo real mediante consumidor Kafka
-- Notificaciones instantáneas al dashboard vía WebSocket, con opción de marcarlas como leídas
-- Historial de notificaciones por usuario
-- Landing pública + flujo de login/registro separado del área privada
+- Registration and login with JWT, passwords hashed with BCrypt
+- Resource-level authorization: each user can only view/modify their own
+  alerts and notifications
+- Rate limiting on the login endpoint to mitigate brute-force attempts
+- Alert management by product and target price (create, pause/resume, delete)
+- Price simulator with random variation every 5 seconds
+- Real-time alert evaluation via Kafka consumer
+- Instant dashboard notifications over WebSocket, with option to mark as read
+- Per-user notification history
+- Interactive API documentation via Swagger UI
+- Health check endpoint used by Docker Compose to gate service startup order
+- Public landing page + login/registration flow separate from the private area
 
-## Decisiones de diseño
+## Design decisions
 
-**¿Por qué Kafka y no una llamada directa entre servicios?**
-El desacoplamiento permite que el simulador y el evaluador evolucionen de forma independiente. Si el evaluador se cae, los eventos se acumulan en Kafka y se procesan cuando vuelve, sin perder ninguno.
+**Why Kafka instead of a direct call between services?**
+Decoupling lets the simulator and the evaluator evolve independently. If the
+evaluator goes down, events queue up in Kafka and get processed once it's
+back, with no data loss.
 
-**¿Por qué WebSocket y no polling?**
-El polling requeriría que el cliente pregunte cada X segundos si hay notificaciones nuevas, generando carga innecesaria. WebSocket mantiene una conexión abierta y el servidor empuja las notificaciones en el momento exacto en que ocurren.
+**Why WebSocket instead of polling?**
+Polling would require the client to ask every X seconds whether there are new
+notifications, generating unnecessary load. WebSocket keeps an open
+connection and the server pushes notifications the exact moment they happen.
 
-**¿Por qué JWT y no sesiones?**
-El backend es completamente stateless: no guarda sesión en memoria ni en BD, lo que facilita escalar horizontalmente y encaja de forma natural con un despliegue en contenedores separados de frontend y backend.
+**Why JWT instead of sessions?**
+The backend is fully stateless: no session stored in memory or in the
+database, which makes horizontal scaling easier and fits naturally with a
+deployment where frontend and backend run in separate containers.
 
-**¿Por qué una alerta se desactiva tras dispararse?**
-Igual que en trackers de precio conocidos (Keepa, CamelCamelCamel), una alerta representa un objetivo puntual: en cuanto se cumple, se marca como completada en vez de seguir notificando en bucle. El usuario puede reactivarla con un clic si quiere seguir vigilando el mismo producto.
+**Why does an alert deactivate once triggered?**
+Same as well-known price trackers (Keepa, CamelCamelCamel): an alert
+represents a one-time target. Once it's met, it's marked as completed
+instead of notifying in a loop. The user can reactivate it with one click if
+they want to keep watching the same product.
 
-## Probarlo en local
+**Why rate limit only the login endpoint?**
+It's the highest-value target for credential stuffing and brute-force
+attempts against user accounts. Bucket4j caps repeated attempts per IP
+without adding overhead to the rest of the API.
 
-**Requisito único:** tener Docker instalado.
+## Running it locally
+
+**Only requirement:** Docker installed.
 
 ```bash
 git clone https://github.com/DebHatim/alertas-tiempo-real.git
@@ -66,50 +98,70 @@ cd alertas-tiempo-real
 docker compose up -d
 ```
 
-Ese único comando levanta MySQL, Zookeeper, Kafka, el backend Spring Boot y el frontend. Sin necsidad de instalar Java, Maven, Node ni configurar bases de datos a mano.
+That single command spins up MySQL, Zookeeper, Kafka, the Spring Boot
+backend, and the frontend. No need to install Java, Maven, Node, or
+configure databases by hand.
 
 - Frontend: `http://localhost`
 - Backend API: `http://localhost:8080/api`
-- phpMyAdmin (opcional, inspeccionar BD): `http://localhost:8081`
+- Swagger UI: `http://localhost:8080/swagger-ui.html`
+- Backend health check: `http://localhost:8080/actuator/health`
+- phpMyAdmin (optional, inspect the DB): `http://localhost:8081`
 
-> MySQL corre sin contraseña y phpMyAdmin con acceso arbitrario, una configuración pensada solo para desarrollo local, no para un despliegue expuesto a internet.
+> MySQL runs without a password and phpMyAdmin with arbitrary access, a
+> configuration meant only for local development, not for a deployment
+> exposed to the internet.
 
 <details>
-<summary>Desarrollo del backend sin Docker (opcional)</summary>
+<summary>Backend development without Docker (optional)</summary>
 
-Si quieres iterar directamente sobre el backend con Maven, necesitas Java 21, Maven, y una instancia de Kafka + MySQL 8 corriendo por tu cuenta (puedes levantar solo esas dos con `docker compose up -d mysql kafka zookeeper`).
+If you want to iterate directly on the backend with Maven, you need Java 21,
+Maven, and a running Kafka + MySQL 8 instance on your own (you can spin up
+just those two with `docker compose up -d mysql kafka zookeeper`).
 
 ```bash
 ./mvnw spring-boot:run
 ```
 
-Y para el frontend:
+And for the frontend:
 ```bash
 cd frontend-alertas
 npm install
 npm run dev
 ```
 
-Variables de entorno relevantes: `KAFKA_SERVERS`, `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, `APP_CORS_ALLOWED_ORIGIN` (backend) y `VITE_API_URL` (frontend, build-time).
+Relevant environment variables: `KAFKA_SERVERS`, `DB_URL`, `DB_USERNAME`,
+`DB_PASSWORD`, `APP_CORS_ALLOWED_ORIGIN` (backend) and `VITE_API_URL`
+(frontend, build-time).
 </details>
 
 ## Testing
 
-Cobertura con **JUnit 5 + Mockito** sobre la lógica de negocio, sin infraestructura externa (no requiere Kafka ni MySQL levantados):
+Full coverage with **JUnit 5 + Mockito** over the business logic, no external
+infrastructure required (no need for Kafka or MySQL running):
 
-- `AlertaServiceTest` - creación de alertas, listado por usuario, y control de propiedad al desactivar/eliminar (incluye el caso de un usuario intentando modificar una alerta que no es suya).
-* `NotificacionServiceTest` - despacho de alertas en tiempo real: persistencia del historial en base de datos, validación de lectura/autorización de propiedad, y envío reactivo mediante WebSockets.
+- `AlertaServiceTest` - alert creation, listing by user, and ownership checks
+  when pausing/deleting (including the case of a user attempting to modify
+  an alert that isn't theirs).
+- `AlertaEvaluadorServiceTest` - Kafka consumer logic and alert triggering
+  against target prices.
+- `NotificacionServiceTest` - real-time alert dispatch: history persistence,
+  read/ownership validation, and reactive delivery via WebSocket.
+- Controller layer tests for `AlertaController`, `NotificacionController`,
+  `AuthController`, and `ProductoController`.
 
 ```bash
 ./mvnw test
 ```
 
-## Roadmap / pendiente
+Every push to `main` and every pull request runs the full suite via GitHub
+Actions.
 
-- Tests de `AlertaEvaluadorService` (lógica del consumidor de Kafka y disparo de alertas)
-- Tests del `controller layer`
-- Restringir origen del endpoint WebSocket en producción (actualmente `*`)
+## Roadmap
 
-## Autor
+- Production deployment on a DigitalOcean Droplet, the only
+  remaining step to close this project.
+
+## Author
 
 **Hatim Debboun** · [LinkedIn](https://linkedin.com/in/hatimdebboun) · [GitHub](https://github.com/DebHatim)
