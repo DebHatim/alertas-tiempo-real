@@ -8,8 +8,13 @@ const DashBoard = () => {
     const {user} = useContext(AuthContext);
     const [productos, setProductos] = useState([]);
 
+    const [productoActualizado, setProductoActualizado] = useState({
+        id: /** @type {number|null} */ (null),
+        tendencia: ''
+    });
+
     // Conectamos al WebSocket usando el ID del usuario logueado
-    const {notificaciones, setNotificaciones, conectado} = useWebSocket(user?.id);
+    const {notificaciones, setNotificaciones, conectado, ultimoPrecio} = useWebSocket(user?.id);
 
     // Cargamos los productos de la BD
     useEffect(() => {
@@ -17,6 +22,31 @@ const DashBoard = () => {
             .then(response => setProductos(response.data))
             .catch(error => console.error("Error cargando productos:", error));
     }, []);
+
+    // Reaccionar a la actualizacion de precios en tiempo real
+    useEffect(() => {
+        if (ultimoPrecio) {
+            setProductos(prevProductos =>
+                prevProductos.map(prod =>
+                    prod.id === ultimoPrecio.productoId
+                        ? {...prod, precioActual: ultimoPrecio.precioActual}
+                        : prod
+                )
+            );
+
+            const anterior = Number(ultimoPrecio.precioAnterior);
+            const actual = Number(ultimoPrecio.precioActual);
+            const tendencia = actual < anterior ? 'baja' : 'sube';
+
+            setProductoActualizado({id: ultimoPrecio.productoId, tendencia});
+
+            const timer = setTimeout(() => {
+                setProductoActualizado({id: null, tendencia: ''});
+            }, 1800);
+
+            return () => clearTimeout(timer);
+        }
+    }, [ultimoPrecio]);
 
     // Segundo useEffect para cargar el historial de notificaciones
     useEffect(() => {
@@ -34,7 +64,7 @@ const DashBoard = () => {
         try {
             await notificacionService.marcarLeida(id);
             setNotificaciones(prev =>
-                prev.map(n => n.id === id ? { ...n, leida: true } : n)
+                prev.map(n => n.id === id ? {...n, leida: true} : n)
             );
         } catch (error) {
             console.error('Error al marcar como leída', error);
@@ -82,15 +112,25 @@ const DashBoard = () => {
                     <h3>Productos Activos</h3>
                     <ul className="product-list">
                         {productos.length > 0 ? (
-                            productos.map((prod) => (
-                                <li key={prod.id} className="product-item">
-                                    <span>{prod.nombre}</span>
-                                    <span className="product-price">
-                                        {typeof prod.precioActual === 'number' ?
-                                            prod.precioActual.toFixed(2) : Number(prod.precioActual).toFixed(2)}€
+                            productos.map((prod) => {
+                                // 1. Comprobamos si este producto específico se está actualizando
+                                const estaActualizando = productoActualizado.id === prod.id;
+
+                                // 2. Si se está actualizando, le pegamos la clase 'actualizando-baja' o 'actualizando-sube'
+                                const claseActualizacion = estaActualizando
+                                    ? `actualizando-${productoActualizado.tendencia}`
+                                    : '';
+
+                                return (
+                                    <li key={prod.id} className={`product-item ${claseActualizacion}`}>
+                                        <span>{prod.nombre}</span>
+                                        <span className="product-price">
+                                    {typeof prod.precioActual === 'number' ?
+                                        prod.precioActual.toFixed(2) : Number(prod.precioActual).toFixed(2)}€
                                     </span>
-                                </li>
-                            ))
+                                    </li>
+                                );
+                            })
                         ) : (
                             <p className="no-products">Sin productos activos para mostrar en este momento.</p>
                         )}
@@ -105,23 +145,25 @@ const DashBoard = () => {
                     ) : (
                         <ul className="notification-list">
                             {notificaciones.map((notif, index) => (
-                                <li key={notif.id ?? index} className={`notification-item ${notif.leida ? 'leida' : ''}`}>
+                                <li key={notif.id ?? index}
+                                    className={`notification-item ${notif.leida ? 'leida' : ''}`}>
                                     <div className="notification-meta">
                                         <span className="notification-date">{formatearFecha(notif.fecha)}</span>
                                         <button className="btn-eliminar-notif"
-                                            onClick={() => handleEliminarNotificacion(notif.id, index)}
-                                            title="Eliminar notificación">ELIMINAR</button>
+                                                onClick={() => handleEliminarNotificacion(notif.id, index)}
+                                                title="Eliminar notificación">ELIMINAR
+                                        </button>
                                     </div>
 
                                     <span className="notification-message">{notif.mensaje}</span>
 
                                     <div className="notification-details">
-                                        Actual: <strong>{notif.precioActual}€</strong> |
-                                        Objetivo: <strong>{notif.precioObjetivo}€</strong>
+                                        Tu precio objetivo: <strong>{notif.precioObjetivo}€</strong>
                                     </div>
 
                                     {!notif.leida && (
-                                        <button className="btn-marcar-leida" onClick={() => handleMarcarLeida(notif.id)}>
+                                        <button className="btn-marcar-leida"
+                                                onClick={() => handleMarcarLeida(notif.id)}>
                                             Marcar como leída
                                         </button>
                                     )}

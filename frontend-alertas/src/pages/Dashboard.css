@@ -76,7 +76,8 @@ html, body {
     align-items: center;
     padding: 0.85rem 1rem;
     border-bottom: 1px solid #f1f5f9;
-    transition: background-color 0.2s;
+    transition: background-color 0.2s, transform 0.2s;
+    border-radius: 8px;
 }
 
 .product-item:last-child {
@@ -85,7 +86,6 @@ html, body {
 
 .product-item:hover {
     background-color: #E4F0F6;
-    border-radius: 8px;
 }
 
 .product-price {
@@ -95,6 +95,7 @@ html, body {
     padding: 0.25rem 0.75rem;
     border-radius: 20px;
     font-size: 0.9rem;
+    transition: all 0.3s ease;
 }
 
 .notification-panel {
@@ -206,4 +207,66 @@ html, body {
 
 .btn-eliminar-notif:active {
     transform: scale(0.95);
+}
+
+.product-item.actualizando-baja {
+    animation: flashVerdeFondo 1.8s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.product-item.actualizando-baja .product-price {
+    animation: flashVerdePrecio 1.8s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.product-item.actualizando-sube {
+    animation: flashRojoFondo 1.8s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.product-item.actualizando-sube .product-price {
+    animation: flashRojoPrecio 1.8s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* --- KEYFRAMES  --- */
+
+@keyframes flashVerdeFondo {
+    0% {
+        background-color: rgba(34, 197, 94, 0.15); /* Verde esmeralda suave */
+    }
+    100% {
+        background-color: transparent;
+    }
+}
+
+@keyframes flashVerdePrecio {
+    0% {
+        background-color: #22c55e;
+        color: #ffffff;
+        transform: scale(1.08);
+        box-shadow: 0 0 12px rgba(34, 197, 94, 0.4);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 rgba(34, 197, 94, 0);
+    }
+}
+
+@keyframes flashRojoFondo {
+    0% {
+        background-color: rgba(239, 68, 68, 0.12); /* Rojo suave */
+    }
+    100% {
+        background-color: transparent;
+    }
+}
+
+@keyframes flashRojoPrecio {
+    0% {
+        background-color: #ef4444;
+        color: #ffffff;
+        transform: scale(1.08);
+        box-shadow: 0 0 12px rgba(239, 68, 68, 0.4);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 rgba(239, 68, 68, 0);
+    }
 }

@@ -5,8 +5,9 @@ import {Client} from '@stomp/stompjs';
 export const useWebSocket = (usuarioId) => {
     // Guardar todas las alertas que nos lleguen
     const [notificaciones, setNotificaciones] = useState([]);
-
     const [conectado, setConectado] = useState(false);
+    // Estado para el ultimo precio actualizado
+    const [ultimoPrecio, setultimoPrecio] = useState(null);
 
     useEffect(() => {
         if (!usuarioId) return;
@@ -24,7 +25,7 @@ export const useWebSocket = (usuarioId) => {
         });
 
         // onConnect = callback
-        stompClient.onConnect = (frame) => {
+        stompClient.onConnect = () => {
             // Log comprobacion conexion
             setConectado(true);
 
@@ -37,6 +38,14 @@ export const useWebSocket = (usuarioId) => {
                     setNotificaciones((prev) => [nuevaNotificacion, ...prev]);
                 }
             });
+            // Subscripcion publica a los cambios de precios
+            stompClient.subscribe('/topic/precios', (message) => {
+                if (message.body) {
+                    const eventoPrecio = JSON.parse(message.body);
+                    // Guardamos el evento de precio
+                    setultimoPrecio(eventoPrecio);
+                }
+            })
         };
 
         // Manejo de errores
@@ -59,5 +68,5 @@ export const useWebSocket = (usuarioId) => {
         };
     }, [usuarioId]);
 
-    return {notificaciones, setNotificaciones, conectado};
+    return {notificaciones, setNotificaciones, conectado, ultimoPrecio};
 };
