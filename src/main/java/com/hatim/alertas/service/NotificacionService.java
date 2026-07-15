@@ -72,7 +72,7 @@ public class NotificacionService {
 
         // Validar que la notificacion pertenezca al usuario autenticado
         if (!notificacion.getUsuario().getId().equals(autenticadoId)) {
-            throw new org.springframework.security.access.AccessDeniedException("No tienes permiso para modificar esta notificación");
+            throw new AccessDeniedException("No tienes permiso para modificar esta notificación");
         }
 
         // Modificar estado y guardar
