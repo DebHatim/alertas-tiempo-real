@@ -41,6 +41,34 @@ const DashBoard = () => {
         }
     };
 
+    const handleEliminarNotificacion = async (id, index) => {
+        if (!id) {
+            setNotificaciones(prev => prev.filter((_, i) => i !== index));
+            return;
+        }
+
+        try {
+            await notificacionService.eliminar(id);
+            // Filtrar por id
+            setNotificaciones(prev => prev.filter(n => n.id !== id));
+        } catch (error) {
+            console.error('Error al eliminar la notificacion', error);
+            setNotificaciones(prev => prev.filter(n => n.id !== id));
+        }
+    }
+
+    const formatearFecha = (fechaInput) => {
+        if (!fechaInput) return "";
+        const fecha = new Date(fechaInput);
+
+        return fecha.toLocaleString('es-ES', {
+            day: 'numeric',
+            month: 'short',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    }
+
     return (
         <div className="dashboard-container">
             <div className="dashboard-header">
@@ -78,11 +106,20 @@ const DashBoard = () => {
                         <ul className="notification-list">
                             {notificaciones.map((notif, index) => (
                                 <li key={notif.id ?? index} className={`notification-item ${notif.leida ? 'leida' : ''}`}>
+                                    <div className="notification-meta">
+                                        <span className="notification-date">{formatearFecha(notif.fecha)}</span>
+                                        <button className="btn-eliminar-notif"
+                                            onClick={() => handleEliminarNotificacion(notif.id, index)}
+                                            title="Eliminar notificación">ELIMINAR</button>
+                                    </div>
+
                                     <span className="notification-message">{notif.mensaje}</span>
+
                                     <div className="notification-details">
                                         Actual: <strong>{notif.precioActual}€</strong> |
                                         Objetivo: <strong>{notif.precioObjetivo}€</strong>
                                     </div>
+
                                     {!notif.leida && (
                                         <button className="btn-marcar-leida" onClick={() => handleMarcarLeida(notif.id)}>
                                             Marcar como leída
