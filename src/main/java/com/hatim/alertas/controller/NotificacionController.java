@@ -42,4 +42,14 @@ public class NotificacionController {
         Notificacion actualizada = notificacionService.marcarComoLeida(id, autenticadoId);
         return ResponseEntity.ok(actualizada);
     }
+
+    // Metodo DELETE para eliminar una notificacion
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Eliminar notificación", description = "Elimina físicamente una notificación de la base de datos si pertenece al usuario autenticado.")
+    public ResponseEntity<Void> eliminarNotificacion(@PathVariable Long id, Authentication authentication) {
+        Long autenticadoId = (Long) authentication.getPrincipal();
+
+        notificacionService.eliminarNotificacion(id, autenticadoId);
+        return ResponseEntity.noContent().build(); // Devolver codigo 204 No Content
+    }
 }
