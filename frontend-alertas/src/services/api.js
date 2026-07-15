@@ -41,9 +41,12 @@ api.interceptors.response.use(
         // Comprobar si el servidor ha respondido con un error
         if (error.response) {
             const status = error.response.status;
+            const url = error.config?.url || '';
+
+            const esPeticionAuth = url.includes('/auth/login') || url.includes('/auth/registro');
 
             // Si el estado es 401 o 403
-            if (status === 401 || status === 403) {
+            if ((status === 401 || status === 403) && !esPeticionAuth) {
                 console.warn("La sesión ha expirado o el token no es válido.");
 
                 // Eliminar la clave del usuario del almacenamiento local
@@ -82,7 +85,8 @@ export const alertaService = {
 export const notificacionService = {
     getByUsuario: (usuarioId) => api.get(`/notificaciones/usuario/${usuarioId}`),
     getHistorial: (usuarioId) => api.get(`/notificaciones/usuario/${usuarioId}`),
-    marcarLeida: (id) => api.patch(`/notificaciones/${id}/leer`)
+    marcarLeida: (id) => api.patch(`/notificaciones/${id}/leer`),
+    eliminar: (id) => api.delete(`/notificaciones/${id}`)
 };
 
 export default api;
