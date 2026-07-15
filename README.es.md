@@ -69,7 +69,7 @@ URL.
 <table>
   <tr>
     <td width="50%">
-      <img src="assets/screenshots/dashboard.png" alt="Panel de control con productos y notificaciones en tiempo real" />
+      <img src="assets/screenshots/dashboard-v2.png" alt="Panel de control con productos y notificaciones en tiempo real" />
       <p align="center"><em>Panel de control: productos activos y flujo de notificaciones en tiempo real</em></p>
     </td>
     <td width="50%">

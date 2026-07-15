@@ -70,7 +70,7 @@ notification routes check that the requested resource belongs to the user in the
 <table>
   <tr>
     <td width="50%">
-      <img src="assets/screenshots/dashboard.png" alt="Dashboard with products and live notifications" />
+      <img src="assets/screenshots/dashboard-v2.png" alt="Dashboard with products and live notifications" />
       <p align="center"><em>Dashboard: active products and real-time notification feed</em></p>
     </td>
     <td width="50%">
