@@ -9,6 +9,7 @@ import com.hatim.alertas.repository.NotificacionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -77,5 +78,18 @@ public class NotificacionService {
         // Modificar estado y guardar
         notificacion.setLeida(true);
         return notificacionRepository.save(notificacion);
+    }
+
+    @Transactional
+    public void eliminarNotificacion(Long notificacionId, Long autenticadoId) {
+        // Buscar la notificacion
+        Notificacion notificacion = notificacionRepository.findById(notificacionId)
+                .orElseThrow(() -> new ResourceNotFoundException("Notificación no encontrada"));
+        // Validar el propietario
+        if (!notificacion.getUsuario().getId().equals(autenticadoId)) {
+            throw new AccessDeniedException("No tienes permiso para eliminar esta notificación");
+        }
+        // Eliminar de la BD
+        notificacionRepository.delete(notificacion);
     }
 }
