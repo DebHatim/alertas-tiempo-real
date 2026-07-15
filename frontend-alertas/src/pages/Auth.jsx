@@ -1,20 +1,27 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {AuthContext} from "../context/AuthContext.jsx";
 import {authService} from "../services/api.js";
+import {useNavigate} from "react-router-dom";
 import './Auth.css';
 
-const Auth = () => {
+const Auth = ({defaultLogin = true}) => {
     // Usar el contexto para autenticar
     const {login} = useContext(AuthContext)
+    const navigate = useNavigate();
 
     // Estado para alternar entre Login y Registro
-    const [isLogin, setIsLogin] = useState(true);
+    const [isLogin, setIsLogin] = useState(defaultLogin);
 
     // Definir estados locales para capturar datos del formulario
     const [nombre, setNombre] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+
+    useEffect(() => {
+        setIsLogin(defaultLogin);
+        setError('');
+    }, [defaultLogin]);
 
     // Metodo para controlar el formulario
     const handleSubmit = async (e) => {
@@ -54,6 +61,18 @@ const Auth = () => {
             }
         }
     };
+
+    const handleSwitchMode = () => {
+        setError('');
+        if (isLogin) {
+            setIsLogin(false);
+            navigate('/registro');
+        }
+        else {
+            setIsLogin(true);
+            navigate('/login');
+        }
+    }
 
     return (
         <div className="auth-container">
@@ -97,11 +116,7 @@ const Auth = () => {
                     </button>
                 </form>
                 <div className="auth-footer">
-                    <button type="button" className="btn-switch"
-                            onClick={() => {
-                                setIsLogin(!isLogin);
-                                setError('');
-                            }}>
+                    <button type="button" className="btn-switch" onClick={handleSwitchMode}>
                         {isLogin ? '¿No tienes cuenta? Registrate aqui' : '¿Ya tienes cuenta? Inicia sesion'}
                     </button>
                 </div>
