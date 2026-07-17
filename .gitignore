@@ -31,3 +31,20 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Node / React (Frontend) ###
+frontend-alertas/node_modules/
+frontend-alertas/dist/
+frontend-alertas/.eslintcache
+frontend-alertas/.local
+
+### Variables de Entorno y Seguridad ###
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.env
+
+### Docker OS Files ###
+.dockerignore
