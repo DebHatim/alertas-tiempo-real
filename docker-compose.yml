@@ -46,24 +46,24 @@ services:
     build: .
     container_name: alertas-backend
     healthcheck:
-      test: ["CMD-SHELL", "wget --quiet --tries=1 --spider http://localhost:8080/actuator/health || exit 1"]
-      interval: 10s
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/actuator/health" ]
+      interval: 15s
       timeout: 5s
-      retries: 3
-      start_period: 20s # Esperar 20 segundos antes de comprobar
+      retries: 4
+      start_period: 45s
     ports:
-      - "8080:8080"
+      - "127.0.0.1:8080:8080"
     depends_on:
       mysql:
         condition: service_healthy
       kafka:
         condition: service_started
     environment:
-      - DB_URL=jdbc:mysql://mysql:3306/alertas
+      - DB_URL=jdbc:mysql://mysql:3306/alertas?createDatabaseIfNotExist=true&serverTimezone=UTC&useSSL=false
       - DB_USERNAME=root
       - DB_PASSWORD=
       - KAFKA_SERVERS=kafka:29092
-      - APP_CORS_ALLOWED_ORIGIN=${CORS_ALLOWED_ORIGIN:-http://localhost}
+      - APP_CORS_ALLOWED_ORIGIN=https://alertas.hatimdebboun.dev
     networks:
       - alertas-network
 
@@ -71,10 +71,10 @@ services:
     build:
       context: ./frontend-alertas
       args:
-        VITE_API_URL: ${VITE_API_URL}
+        VITE_API_URL: https://api.hatimdebboun.dev/api
     container_name: alertas-frontend
     ports:
-      - "80:80"
+      - "127.0.0.1:3000:80"
     depends_on:
       backend:
         condition: service_healthy
