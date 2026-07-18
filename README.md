@@ -23,7 +23,7 @@ suite and, if it passes, deploys automatically with zero manual steps.
 
 ## Demo
 
-![Real-time notification flow demo](assets/screenshots/demo-v2.gif)
+![Real-time notification flow demo](assets/screenshots/demo-v3.gif)
 
 *Creating an alert, then watching the notification arrive live over
 WebSocket the moment the simulated price drops below target, no page
@@ -205,7 +205,7 @@ Actions. If tests fail, the deployment step is skipped automatically.
       <p><em>Rate limiting returning 429 after repeated login attempts</em></p>
     </td>
     <td style="width: 33%; text-align: center;">
-      <img src="assets/screenshots/swagger-ui.png" alt="Swagger UI" />
+      <img src="assets/screenshots/swagger-ui-v2.png" alt="Swagger UI" />
       <p><em>API documented and explorable via Swagger UI</em></p>
     </td>
   </tr>

@@ -22,7 +22,7 @@ autenticación stateless con JWT y notificaciones push vía WebSocket.
 
 ## Demo
 
-![Demostración del flujo de notificaciones en tiempo real](assets/screenshots/demo-v2.gif)
+![Demostración del flujo de notificaciones en tiempo real](assets/screenshots/demo-v3.gif)
 
 *Crear una alerta y luego ver la notificación llegar en tiempo real a través de WebSocket en el momento en que el precio
 simulado cae por debajo del objetivo, sin actualizar la página.*
@@ -191,7 +191,7 @@ despliegue se omite automáticamente.
       <p><em>Respuesta 429 de límite de peticiones tras intentos de login repetidos</em></p>
     </td>
     <td style="width: 33%; text-align: center;">
-      <img src="assets/screenshots/swagger-ui.png" alt="Swagger UI" />
+      <img src="assets/screenshots/swagger-ui-v2.png" alt="Swagger UI" />
       <p><em>API documentada y explorable a través de Swagger UI</em></p>
     </td>
   </tr>
