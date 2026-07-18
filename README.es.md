@@ -1,4 +1,4 @@
-🇬🇧 [Read in English](README.md) | 🇪🇸 Español (estás aquí)
+[![English](https://img.shields.io/badge/Language-English-blue)](README.md) [![Español](https://img.shields.io/badge/Idioma-Español-red)](#)
 
 ---
 
@@ -12,6 +12,7 @@
 [![JWT](https://img.shields.io/badge/Auth-JWT-black)]()
 [![OpenAPI](https://img.shields.io/badge/API%20Docs-Swagger-85EA2D)]()
 [![CI](https://github.com/DebHatim/alertas-tiempo-real/actions/workflows/ci.yml/badge.svg)](https://github.com/DebHatim/alertas-tiempo-real/actions/workflows/ci.yml)
+[![Portfolio](https://img.shields.io/badge/Portfolio-hatimdebboun.dev-emerald)](https://hatimdebboun.dev)
 
 Plataforma donde los usuarios configuran alertas personalizadas sobre productos y reciben notificaciones en tiempo real
 cuando el precio baja de su objetivo. Arquitectura orientada a eventos con Apache Kafka como núcleo del sistema,
@@ -37,18 +38,19 @@ URL.
 
 ## Stack
 
-| Capa              | Tecnología                                                              |
-|-------------------|-------------------------------------------------------------------------|
-| Backend           | Java 21 · Spring Boot 3.5                                               |
-| Mensajería        | Apache Kafka · Zookeeper                                                |
-| Seguridad         | Spring Security 6 · JWT (JJWT) · BCrypt · Rate limiting (Bucket4j)      |
-| Persistencia      | JPA/Hibernate · MySQL 8                                                 |
-| Tiempo real       | WebSocket · STOMP · SockJS                                              |
-| Documentación API | springdoc-openapi (Swagger UI)                                          |
-| Observabilidad    | Spring Boot Actuator (health checks)                                    |
-| Frontend          | React 19 · React Router · Axios                                         |
-| Infraestructura   | Docker Compose (MySQL, Kafka, Zookeeper, backend, frontend, phpMyAdmin) |
-| Build             | Maven · Lombok                                                          |
+| Capa              | Tecnología                                                                 |
+|-------------------|----------------------------------------------------------------------------|
+| Backend           | Java 21 · Spring Boot 3.5                                                  |
+| Mensajería        | Apache Kafka · Zookeeper                                                   |
+| Seguridad         | Spring Security 6 · JWT (JJWT) · BCrypt · Rate limiting (Bucket4j)         |
+| Persistencia      | JPA/Hibernate · MySQL 8                                                    |
+| Tiempo real       | WebSocket · STOMP · SockJS                                                 |
+| Documentación API | springdoc-openapi (Swagger UI)                                             |
+| Observabilidad    | Spring Boot Actuator (health checks)                                       |
+| Frontend          | React 19 · React Router · Axios                                            |
+| Infraestructura   | Docker Compose (MySQL, Kafka, Zookeeper, backend, frontend, phpMyAdmin)    |
+| CI/CD             | GitHub Actions (pruebas automatizadas + despliegue en cada envío a `main`) |
+| Build             | Maven · Lombok                                                             |
 
 ## Funcionalidades
 
@@ -62,19 +64,21 @@ URL.
 - Historial de notificaciones por usuario
 - Documentación de API interactiva vía Swagger UI
 - Endpoint de health check usado por Docker Compose para ordenar el arranque de servicios
+- Despliegue en vivo con entrega continua: cada envío a `main` se prueba y se despliega automáticamente mediante GitHub
+  Actions.
 - Landing pública + flujo de login/registro separado del área privada
 
 ## Capturas de pantalla
 
 <table>
   <tr>
-    <td width="50%">
+    <td style="width: 50%; text-align: center;">
       <img src="assets/screenshots/dashboard-v2.png" alt="Panel de control con productos y notificaciones en tiempo real" />
-      <p align="center"><em>Panel de control: productos activos y flujo de notificaciones en tiempo real</em></p>
+      <p><em>Panel de control: productos activos y flujo de notificaciones en tiempo real</em></p>
     </td>
-    <td width="50%">
+    <td style="width: 50%; text-align: center;">
       <img src="assets/screenshots/alertas.png" alt="Pagina de alertas" />
-      <p align="center"><em>Página de alertas: crear, pausar/reanudar y eliminar alertas de precios</em></p>
+      <p><em>Página de alertas: crear, pausar/reanudar y eliminar alertas de precios</em></p>
     </td>
   </tr>
 </table>
@@ -101,6 +105,12 @@ quiere seguir vigilando el mismo producto.
 **¿Por qué rate limiting solo en login?**
 Es el endpoint de mayor valor para ataques de fuerza bruta o credential stuffing contra cuentas de usuario. Bucket4j
 limita los intentos repetidos por IP sin añadir overhead al resto de la API.
+
+**¿Por qué una pipeline de CI/CD para un proyecto personal?**
+Porque escribir pruebas solo sirve a medias si nadie impide que el código defectuoso llegue a producción.
+Cada push ejecuta primero el conjunto completo de pruebas y solo si todo va bien, la canalización se conecta al servidor
+mediante SSH, descarga el código más reciente y reconstruye los contenedores. Sin despliegues manuales, sin riesgo de
+distribuir accidentalmente algo sin probar.
 
 ## Probarlo en local
 
@@ -163,7 +173,8 @@ ni MySQL levantados):
 ./mvnw test
 ```
 
-Cada push a `main` y cada pull request ejecuta la suite completa vía GitHub Actions.
+Cada push a `main` y cada pull request ejecuta la suite completa vía GitHub Actions. Si las pruebas fallan, el
+despliegue se omite automáticamente.
 
 <details>
 <summary>Capturas técnicas</summary>
@@ -171,33 +182,30 @@ Cada push a `main` y cada pull request ejecuta la suite completa vía GitHub Act
 
 <table>
   <tr>
-    <td style="width: 33%">
+    <td style="width: 33%; text-align: center;">
       <img src="assets/screenshots/tests-passing.png" alt="Suite de tests pasando" />
-      <p align="center"><em>Suite de pruebas ejecutada con éxito</em></p>
+      <p><em>Suite de pruebas ejecutada con éxito</em></p>
     </td>
-    <td style="width: 33%">
+    <td style="width: 33%; text-align: center;">
       <img src="assets/screenshots/rate-limit-429.png" alt="Respuesta de rate limiting" />
-      <p align="center"><em>Respuesta 429 de límite de peticiones tras intentos de login repetidos</em></p>
+      <p><em>Respuesta 429 de límite de peticiones tras intentos de login repetidos</em></p>
     </td>
-    <td style="width: 33%">
+    <td style="width: 33%; text-align: center;">
       <img src="assets/screenshots/swagger-ui.png" alt="Swagger UI" />
-      <p align="center"><em>API documentada y explorable a través de Swagger UI</em></p>
+      <p><em>API documentada y explorable a través de Swagger UI</em></p>
     </td>
   </tr>
   <tr>
-    <td colspan="3">
+    <td colspan="3" style="text-align: center;">
       <img src="assets/screenshots/docker-compose-up.png" alt="Docker Compose arrancando todos los servicios" />
-      <p align="center"><em>El sistema entero arrancando con un simple <code>docker compose up -d</code></em></p>
+      <p><em>El sistema entero arrancando con un simple <code>docker compose up -d</code></em></p>
     </td>
   </tr>
 </table>
 
 </details>
 
-## Roadmap
-
-- Despliegue en producción sobre un Droplet de DigitalOcean, único paso pendiente para cerrar el proyecto.
-
 ## Autor
 
-**Hatim Debboun** · [LinkedIn](https://linkedin.com/in/hatimdebboun) · [GitHub](https://github.com/DebHatim)
+**Hatim Debboun
+** · [Portfolio](https://hatimdebboun.dev) · [LinkedIn](https://linkedin.com/in/hatimdebboun) · [GitHub](https://github.com/DebHatim)

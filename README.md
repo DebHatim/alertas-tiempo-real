@@ -1,4 +1,4 @@
-🇬🇧 English (you are here) | 🇪🇸 [Leer en Español](README.es.md)
+[![English](https://img.shields.io/badge/Language-English-blue)](#) [![Español](https://img.shields.io/badge/Idioma-Español-red)](README.es.md)
 
 ---
 
@@ -12,10 +12,12 @@
 [![JWT](https://img.shields.io/badge/Auth-JWT-black)]()
 [![OpenAPI](https://img.shields.io/badge/API%20Docs-Swagger-85EA2D)]()
 [![CI](https://github.com/DebHatim/alertas-tiempo-real/actions/workflows/ci.yml/badge.svg)](https://github.com/DebHatim/alertas-tiempo-real/actions/workflows/ci.yml)
+[![Portfolio](https://img.shields.io/badge/Portfolio-hatimdebboun.dev-emerald)](https://hatimdebboun.dev)
 
 A platform where users set custom alerts on products and get real-time notifications when the price drops below their
 target. Event-driven architecture with Apache Kafka at its core, stateless JWT authentication, and push notifications
-over WebSocket.
+over WebSocket. Deployed on a cloud server with an automated CI/CD pipeline: every push to `main` runs the full test
+suite and, if it passes, deploys automatically with zero manual steps.
 
 ---
 
@@ -48,6 +50,7 @@ notification routes check that the requested resource belongs to the user in the
 | Observability  | Spring Boot Actuator (health checks)                                    |
 | Frontend       | React 19 · React Router · Axios                                         |
 | Infrastructure | Docker Compose (MySQL, Kafka, Zookeeper, backend, frontend, phpMyAdmin) |
+| CI/CD          | GitHub Actions (automated tests + deploy on every push to `main`)       |
 | Build          | Maven · Lombok                                                          |
 
 ## Features
@@ -63,19 +66,21 @@ notification routes check that the requested resource belongs to the user in the
 - Per-user notification history
 - Interactive API documentation via Swagger UI
 - Health check endpoint used by Docker Compose to gate service startup order
+- Live deployment with continuous delivery: every push to `main` is tested
+  and deployed automatically via GitHub Actions
 - Public landing page + login/registration flow separate from the private area
 
 ## Screenshots
 
 <table>
   <tr>
-    <td width="50%">
+    <td style="width: 50%; text-align: center;">
       <img src="assets/screenshots/dashboard-v2.png" alt="Dashboard with products and live notifications" />
-      <p align="center"><em>Dashboard: active products and real-time notification feed</em></p>
+      <p><em>Dashboard: active products and real-time notification feed</em></p>
     </td>
-    <td width="50%">
+    <td style="width: 50%; text-align: center;">
       <img src="assets/screenshots/alertas.png" alt="Alerts page" />
-      <p align="center"><em>Alerts page: create, pause/resume, and delete price alerts</em></p>
+      <p><em>Alerts page: create, pause/resume, and delete price alerts</em></p>
     </td>
   </tr>
 </table>
@@ -107,6 +112,13 @@ they want to keep watching the same product.
 It's the highest-value target for credential stuffing and brute-force
 attempts against user accounts. Bucket4j caps repeated attempts per IP
 without adding overhead to the rest of the API.
+
+**Why a CI/CD pipeline for a personal project?**
+Because writing tests is only half the value if nobody actually blocks bad
+code from reaching production with them. Every push runs the full suite
+first; only if it's green does the pipeline SSH into the server, pull the
+latest code, and rebuild the containers. No manual deploys, no risk of
+shipping something untested by accident.
 
 ## Running it locally
 
@@ -176,7 +188,7 @@ infrastructure required (no need for Kafka or MySQL running):
 ```
 
 Every push to `main` and every pull request runs the full suite via GitHub
-Actions.
+Actions. If tests fail, the deployment step is skipped automatically.
 
 <details>
 <summary>Technical captures</summary>
@@ -184,34 +196,29 @@ Actions.
 
 <table>
   <tr>
-    <td style="width: 33%">
+    <td style="width: 33%; text-align: center;">
       <img src="assets/screenshots/tests-passing.png" alt="Test suite passing" />
-      <p align="center"><em>Full test suite passing locally</em></p>
+      <p><em>Full test suite passing locally</em></p>
     </td>
-    <td style="width: 33%">
+    <td style="width: 33%; text-align: center;">
       <img src="assets/screenshots/rate-limit-429.png" alt="Rate limiting response" />
-      <p align="center"><em>Rate limiting returning 429 after repeated login attempts</em></p>
+      <p><em>Rate limiting returning 429 after repeated login attempts</em></p>
     </td>
-    <td style="width: 33%">
+    <td style="width: 33%; text-align: center;">
       <img src="assets/screenshots/swagger-ui.png" alt="Swagger UI" />
-      <p align="center"><em>API documented and explorable via Swagger UI</em></p>
+      <p><em>API documented and explorable via Swagger UI</em></p>
     </td>
   </tr>
   <tr>
-    <td colspan="3">
+    <td colspan="3" style="text-align: center;">
       <img src="assets/screenshots/docker-compose-up.png" alt="Docker Compose starting all services" />
-      <p align="center"><em>Full stack spinning up with a single <code>docker compose up -d</code></em></p>
+      <p><em>Full stack spinning up with a single <code>docker compose up -d</code></em></p>
     </td>
   </tr>
 </table>
 
 </details>
 
-## Roadmap
-
-- Production deployment on a DigitalOcean Droplet, the only
-  remaining step to close this project.
-
 ## Author
 
-**Hatim Debboun** · [LinkedIn](https://linkedin.com/in/hatimdebboun) · [GitHub](https://github.com/DebHatim)
+**Hatim Debboun** · [Portfolio](https://hatimdebboun.dev) · [LinkedIn](https://linkedin.com/in/hatimdebboun) · [GitHub](https://github.com/DebHatim)
