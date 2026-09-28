@@ -12,7 +12,7 @@
 [![JWT](https://img.shields.io/badge/Auth-JWT-black)]()
 [![OpenAPI](https://img.shields.io/badge/API%20Docs-Swagger-85EA2D)]()
 [![CI](https://github.com/DebHatim/alertas-tiempo-real/actions/workflows/ci.yml/badge.svg)](https://github.com/DebHatim/alertas-tiempo-real/actions/workflows/ci.yml)
-[![Portfolio](https://img.shields.io/badge/Portfolio-hatimdebboun.dev-emerald)](https://hatimdebboun.dev)
+[![Portfolio](https://img.shields.io/badge/Portfolio-hatimdebboun.dev-emerald)](https://hatimdebboun.dev) 
 
 A platform where users set custom alerts on products and get real-time notifications when the price drops below their
 target. Event-driven architecture with Apache Kafka at its core, stateless JWT authentication, and push notifications
