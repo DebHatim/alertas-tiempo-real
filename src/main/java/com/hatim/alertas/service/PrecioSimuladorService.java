@@ -19,7 +19,7 @@ import java.util.Random;
 @Slf4j
 public class PrecioSimuladorService {
 
-    // Inyeccion de dependencias
+    // Inyección de dependencias
     private final ProductoRepository productoRepository;
 
     // Objeto usado para publicar mensajes en Kafka - String = KEY, PrecioEventoDTO = VALUE type
@@ -28,20 +28,22 @@ public class PrecioSimuladorService {
     // Generador de objetos aleatorios de Java
     private final Random random = new Random();
 
-    @Scheduled(fixedDelay = 5000) // Scheduled se ejecuta cada 5 segundos (5000ms) - fixedDelay espera 5 segundos despues de terminar
-    // Metodo para simular cambios de precios
+    // Límite mínimo de seguridad para evitar que los precios bajen de cierto valor
+    private static final BigDecimal PRECIO_MINIMO = BigDecimal.valueOf(0.50);
+
+    @Scheduled(fixedDelay = 5000) // Se ejecuta cada 5 segundos (5000ms) después de completar la última ejecución
     public void simularCambioPrecio() {
 
         // Guarda todos los productos de la BD en una lista
         List<Producto> productos = productoRepository.findAll();
 
-        // Si no hay productos, sale del metodo
+        // Si no hay productos, sale del método
         if (productos.isEmpty()) {
             log.info("No hay productos para simular precios");
             return;
         }
 
-        // Elige un producto aleatorio de la lista - .nextInt(productos.size()) devuelve un numero entre 0 y el tamano menos 1
+        // Elige un producto aleatorio de la lista
         Producto producto = productos.get(random.nextInt(productos.size()));
 
         // Guarda el valor actual antes de cambiarlo
@@ -50,14 +52,21 @@ public class PrecioSimuladorService {
         // Calcula una variación aleatoria entre -10% y +10%
         double variacion = (random.nextDouble() * 20 - 10) / 100;
 
-        // Calcula el nuevo precio y redondea
-        BigDecimal nuevoPrecio = precioAnterior.multiply(BigDecimal.valueOf(1 + variacion)).setScale(2, RoundingMode.HALF_UP);
+        // Calcula el nuevo precio aplicando la variación y redondeando a 2 decimales
+        BigDecimal nuevoPrecio = precioAnterior.multiply(BigDecimal.valueOf(1 + variacion))
+                .setScale(2, RoundingMode.HALF_UP);
 
-        // Actualizacion del precio del objeto y guardado en BD
+        // Validación contra el límite mínimo. Si el cálculo redondeado baja de 0.50€,
+        // lo forzamos a 0.50€ para evitar que el redondeo 'HALF_UP' atrape el precio en 0.05€.
+        if (nuevoPrecio.compareTo(PRECIO_MINIMO) < 0) {
+            nuevoPrecio = PRECIO_MINIMO;
+        }
+
+        // Actualización del precio del objeto y guardado en BD
         producto.setPrecioActual(nuevoPrecio);
         productoRepository.save(producto);
 
-        // Creacion del mensaje que viajara por Kafka con los 4 datos relevantes
+        // Creación del mensaje que viajará por Kafka con los datos relevantes
         PrecioEventoDTO evento = new PrecioEventoDTO(
                 producto.getId(),
                 producto.getNombre(),
@@ -65,10 +74,10 @@ public class PrecioSimuladorService {
                 nuevoPrecio
         );
 
-        // Publica el evento en el topic "price-events" de Kafka, cualquier usuario suscrito a este topic lo recibira
+        // Publica el evento en el topic "price-events" de Kafka
         kafkaTemplate.send("price-events", evento);
 
-        // Log test
+        // Log informativo
         log.info("Precio simulado: {} → {} → {}", producto.getNombre(), precioAnterior, nuevoPrecio);
     }
 }
