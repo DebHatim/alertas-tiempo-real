@@ -124,32 +124,32 @@ shipping something untested by accident.
 
 **Only requirement:** Docker installed.
 
+1. Clone the repository and copy the environment variables template:
 ```bash
 git clone https://github.com/DebHatim/alertas-tiempo-real.git
 cd alertas-tiempo-real
+cp .env.example .env
+```
+
+2. Start the services using Docker Compose:
+```bash
 docker compose up -d
 ```
 
-That single command spins up MySQL, Zookeeper, Kafka, the Spring Boot
-backend, and the frontend. No need to install Java, Maven, Node, or
-configure databases by hand.
+That single command spins up MySQL, Zookeeper, Kafka, the Spring Boot backend, and the frontend securely.
 
-- Frontend: `http://localhost`
+- Frontend: `http://localhost:3000`
 - Backend API: `http://localhost:8080/api`
 - Swagger UI: `http://localhost:8080/swagger-ui.html`
 - Backend health check: `http://localhost:8080/actuator/health`
-- phpMyAdmin (optional, inspect the DB): `http://localhost:8081`
+- phpMyAdmin (inspect the DB): `http://localhost:8081`
 
-> MySQL runs without a password and phpMyAdmin with arbitrary access, a
-> configuration meant only for local development, not for a deployment
-> exposed to the internet.
+> **Note on Security:** In a production environment on your VPS, configure a secure password in your `.env` file (`MYSQL_ROOT_PASSWORD`). Notice that database and message broker ports (MySQL, Kafka) are kept private inside Docker's internal network and are not exposed directly to the public internet.
 
 <details>
 <summary>Backend development without Docker (optional)</summary>
 
-If you want to iterate directly on the backend with Maven, you need Java 21,
-Maven, and a running Kafka + MySQL 8 instance on your own (you can spin up
-just those two with `docker compose up -d mysql kafka zookeeper`).
+If you want to iterate directly on the backend with Maven, you need Java 21, Maven, and a running Kafka + MySQL 8 instance on your own (you can spin up just those components with `docker compose up -d mysql kafka zookeeper`).
 
 ```bash
 ./mvnw spring-boot:run
@@ -163,9 +163,7 @@ npm install
 npm run dev
 ```
 
-Relevant environment variables: `KAFKA_SERVERS`, `DB_URL`, `DB_USERNAME`,
-`DB_PASSWORD`, `APP_CORS_ALLOWED_ORIGIN` (backend) and `VITE_API_URL`
-(frontend, build-time).
+Relevant environment variables: `KAFKA_SERVERS`, `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, `APP_CORS_ALLOWED_ORIGIN` (backend) and `VITE_API_URL` (frontend, build-time).
 </details>
 
 ## Testing

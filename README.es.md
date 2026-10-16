@@ -114,31 +114,34 @@ distribuir accidentalmente algo sin probar.
 
 ## Probarlo en local
 
-**Requisito único:** tener Docker instalado.
+**Único requisito:** Tener Docker instalado.
 
+1. Clonar el repositorio y copiar la plantilla de variables de entorno:
 ```bash
 git clone https://github.com/DebHatim/alertas-tiempo-real.git
 cd alertas-tiempo-real
+cp .env.example .env
+```
+
+2. Iniciar los servicios mediante Docker Compose:
+```bash
 docker compose up -d
 ```
 
-Ese único comando levanta MySQL, Zookeeper, Kafka, el backend Spring Boot y el frontend. Sin necesidad de instalar Java,
-Maven, Node ni configurar bases de datos a mano.
+Este comando pone en marcha, de forma segura, MySQL, Zookeeper, Kafka, el backend (Spring Boot) y el frontend.
 
-- Frontend: `http://localhost`
-- Backend API: `http://localhost:8080/api`
+- Frontend: `http://localhost:3000`
+- API del backend: `http://localhost:8080/api`
 - Swagger UI: `http://localhost:8080/swagger-ui.html`
-- Health check del backend: `http://localhost:8080/actuator/health`
-- phpMyAdmin (opcional, inspeccionar BD): `http://localhost:8081`
+- Verificación de estado (health check) del backend: `http://localhost:8080/actuator/health`
+- phpMyAdmin (para inspeccionar la base de datos): `http://localhost:8081`
 
-> MySQL corre sin contraseña y phpMyAdmin con acceso arbitrario, una configuración pensada solo para desarrollo local,
-> no para un despliegue expuesto a internet.
+> **Nota sobre seguridad:** En un entorno de producción (por ejemplo, en un VPS), asegúrese de configurar una contraseña segura en su archivo `.env` (`MYSQL_ROOT_PASSWORD`). Tenga en cuenta que los puertos de la base de datos y del intermediario de mensajes (MySQL, Kafka) permanecen privados dentro de la red interna de Docker y no están expuestos directamente a internet.
 
 <details>
 <summary>Desarrollo del backend sin Docker (opcional)</summary>
 
-Si quieres iterar directamente sobre el backend con Maven, necesitas Java 21, Maven, y una instancia de Kafka + MySQL 8
-corriendo por tu cuenta (puedes levantar solo esas dos con `docker compose up -d mysql kafka zookeeper`).
+Si prefiere trabajar directamente en el backend usando Maven, necesitará tener instalados Java 21 y Maven, además de contar con instancias de Kafka y MySQL 8 en ejecución (puede iniciar solo estos componentes mediante `docker compose up -d mysql kafka zookeeper`).
 
 ```bash
 ./mvnw spring-boot:run
@@ -152,8 +155,7 @@ npm install
 npm run dev
 ```
 
-Variables de entorno relevantes: `KAFKA_SERVERS`, `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, `APP_CORS_ALLOWED_ORIGIN` (
-backend) y `VITE_API_URL` (frontend, build-time).
+Variables de entorno relevantes: `KAFKA_SERVERS`, `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, `APP_CORS_ALLOWED_ORIGIN` (para el backend) y `VITE_API_URL` (para el frontend, durante la fase de compilación).
 </details>
 
 ## Testing

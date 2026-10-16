@@ -2,17 +2,15 @@ services:
   mysql:
     image: mysql:8.0
     container_name: alertas-mysql
-    ports:
-      - "3306:3306"
     environment:
       MYSQL_DATABASE: alertas
-      MYSQL_ALLOW_EMPTY_PASSWORD: "yes" # Mantiene la configuración actual sin contrasena
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     volumes:
       - mysql_data:/var/lib/mysql
     networks:
       - alertas-network
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-u", "root"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -30,11 +28,8 @@ services:
     container_name: alertas-kafka
     depends_on:
       - zookeeper
-    ports:
-      - "9092:9092"
     environment:
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      # Adaptar los listeners usando la variable SERVER_IP de manera dinamica
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://${SERVER_IP:-localhost}:9092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
@@ -61,9 +56,9 @@ services:
     environment:
       - DB_URL=jdbc:mysql://mysql:3306/alertas?createDatabaseIfNotExist=true&serverTimezone=UTC&useSSL=false
       - DB_USERNAME=root
-      - DB_PASSWORD=
+      - DB_PASSWORD=${MYSQL_ROOT_PASSWORD}
       - KAFKA_SERVERS=kafka:29092
-      - APP_CORS_ALLOWED_ORIGIN=https://alertas.hatimdebboun.dev
+      - APP_CORS_ALLOWED_ORIGIN=${APP_CORS_ALLOWED_ORIGIN}
     networks:
       - alertas-network
 
@@ -71,7 +66,7 @@ services:
     build:
       context: ./frontend-alertas
       args:
-        VITE_API_URL: https://api.hatimdebboun.dev/api
+        VITE_API_URL: ${VITE_API_URL}
     container_name: alertas-frontend
     ports:
       - "127.0.0.1:3000:80"
@@ -88,7 +83,7 @@ services:
       PMA_HOST: mysql
       PMA_PORT: 3306
       PMA_USER: root
-      PMA_ARBITRARY: 1 # Para poder conectar sin contrasena obligatoria
+      PMA_ARBITRARY: ${MYSQL_ROOT_PASSWORD}
     ports:
       - "127.0.0.1:8081:80"
     depends_on:
