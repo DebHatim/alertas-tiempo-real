@@ -10,7 +10,7 @@
 [![React](https://img.shields.io/badge/React-19-61DAFB)](https://react.dev/)
 [![Docker](https://img.shields.io/badge/Docker-Compose-2496ED)](https://www.docker.com/)
 [![JWT](https://img.shields.io/badge/Auth-JWT-black)]()
-[![OpenAPI](https://img.shields.io/badge/API%20Docs-Swagger-85EA2D)]()
+[![OpenAPI](https://img.shields.io/badge/API%20Docs-Swagger-85EA2D)](https://api-alertas.hatimdebboun.dev/swagger-ui/index.html)
 [![CI](https://github.com/DebHatim/alertas-tiempo-real/actions/workflows/ci.yml/badge.svg)](https://github.com/DebHatim/alertas-tiempo-real/actions/workflows/ci.yml)
 [![Portfolio](https://img.shields.io/badge/Portfolio-hatimdebboun.dev-emerald)](https://hatimdebboun.dev) 
 
