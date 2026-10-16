@@ -54,7 +54,7 @@ services:
       kafka:
         condition: service_started
     environment:
-      - DB_URL=jdbc:mysql://mysql:3306/alertas?createDatabaseIfNotExist=true&serverTimezone=UTC&useSSL=false
+      - DB_URL=jdbc:mysql://mysql:3306/alertas?createDatabaseIfNotExist=true&serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true
       - DB_USERNAME=root
       - DB_PASSWORD=${MYSQL_ROOT_PASSWORD}
       - KAFKA_SERVERS=kafka:29092
