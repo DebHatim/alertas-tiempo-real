@@ -6,6 +6,7 @@ import com.hatim.alertas.repository.ProductoRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,8 @@ import java.util.Random;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+// Permite apagar el simulador en un despliegue con datos reales sin tocar codigo
+@ConditionalOnProperty(name = "app.simulador.enabled", havingValue = "true", matchIfMissing = true)
 public class PrecioSimuladorService {
 
     private final ProductoRepository productoRepository;
