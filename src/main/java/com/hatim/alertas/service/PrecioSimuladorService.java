@@ -3,6 +3,7 @@ package com.hatim.alertas.service;
 import com.hatim.alertas.dto.PrecioEventoDTO;
 import com.hatim.alertas.model.Producto;
 import com.hatim.alertas.repository.ProductoRepository;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -11,7 +12,9 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 @Service
@@ -22,6 +25,17 @@ public class PrecioSimuladorService {
     private final ProductoRepository productoRepository;
     private final KafkaTemplate<String, PrecioEventoDTO> kafkaTemplate;
     private final Random random = new Random();
+
+    // Mapa en memoria para recordar el precio base de referencia de cada producto por su nombre (sin tocar la BD)
+    private final Map<String, BigDecimal> preciosBaseReferencia = new HashMap<>();
+
+    @PostConstruct
+    public void initPreciosBase() {
+        // Definimos los precios de referencia iniciales de forma estática
+        preciosBaseReferencia.put("PlayStation 5 Pro", new BigDecimal("799.99"));
+        preciosBaseReferencia.put("iPhone 15 Pro Max", new BigDecimal("1219.00"));
+        preciosBaseReferencia.put("Nintendo Switch 2", new BigDecimal("449.50"));
+    }
 
     @Scheduled(fixedDelay = 5000)
     public void simularCambioPrecio() {
@@ -36,21 +50,24 @@ public class PrecioSimuladorService {
         Producto producto = productos.get(random.nextInt(productos.size()));
         BigDecimal precioAnterior = producto.getPrecioActual();
 
-        // Variacion aleatoria suave entre -6% y +6%
-        double variacion = (random.nextDouble() * 0.12) - 0.06;
+        // Obtener el precio base de referencia del mapa (si no existe, usamos el actual como fallback)
+        BigDecimal precioBase = preciosBaseReferencia.getOrDefault(producto.getNombre(), precioAnterior);
+
+        // Variacion aleatoria suave entre -4% y +4%
+        double variacion = (random.nextDouble() * 0.08) - 0.04;
 
         BigDecimal nuevoPrecio = precioAnterior.multiply(BigDecimal.valueOf(1 + variacion))
                 .setScale(2, RoundingMode.HALF_UP);
 
-        // Limites de seguridad para evitar que el precio baje demasiado o suba en exceso
-        BigDecimal precioMinimoSeguro = BigDecimal.valueOf(10.00);
-        BigDecimal precioMaximoSeguro = BigDecimal.valueOf(2000.00);
+        // Calcular limites estrictos basados en el precio base de referencia (Minimo 70%, Maximo 130%)
+        BigDecimal precioMinimo = precioBase.multiply(BigDecimal.valueOf(0.70)).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal precioMaximo = precioBase.multiply(BigDecimal.valueOf(1.30)).setScale(2, RoundingMode.HALF_UP);
 
-        if (nuevoPrecio.compareTo(precioMinimoSeguro) < 0) {
-            // Si baja del minimo, forzar un rebote hacia arriba
-            nuevoPrecio = precioAnterior.multiply(BigDecimal.valueOf(1.05)).setScale(2, RoundingMode.HALF_UP);
-        } else if (nuevoPrecio.compareTo(precioMaximoSeguro) > 0) {
-            nuevoPrecio = precioMaximoSeguro;
+        // Si se sale del rango permitido, corregir y forzar un rebote seguro
+        if (nuevoPrecio.compareTo(precioMinimo) < 0) {
+            nuevoPrecio = precioMinimo.multiply(BigDecimal.valueOf(1.02)).setScale(2, RoundingMode.HALF_UP);
+        } else if (nuevoPrecio.compareTo(precioMaximo) > 0) {
+            nuevoPrecio = precioMaximo.multiply(BigDecimal.valueOf(0.98)).setScale(2, RoundingMode.HALF_UP);
         }
 
         // Guardar el nuevo precio en la base de datos
