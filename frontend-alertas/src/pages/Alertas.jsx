@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
+import {useContext, useEffect, useState} from 'react';
 import {AuthContext} from "../context/AuthContext.jsx";
 import {alertaService, productoService} from "../services/api.js";
 import './Alertas.css';
@@ -19,18 +19,6 @@ const Alertas = () => {
     // Estados de correccion
     const [error, setError] = useState('')
     const [success, setSuccess] = useState('')
-
-    // Metodo para recoger los productos y alertas al arrancar
-    useEffect(() => {
-        const arrancarDatos = async () => {
-            if (user && user.id) {
-                await cargarProductos();
-                await cargarAlertasUsuario();
-            }
-            setCargando(false);
-        };
-        arrancarDatos();
-    }, [user]);
 
     // Metodo para consultar los productos disponibles
     const cargarProductos = async () => {
@@ -53,6 +41,18 @@ const Alertas = () => {
         }
     };
 
+    // Metodo para recoger los productos y alertas al arrancar
+    useEffect(() => {
+        const arrancarDatos = async () => {
+            if (user && user.id) {
+                await cargarProductos();
+                await cargarAlertasUsuario();
+            }
+            setCargando(false);
+        };
+        arrancarDatos();
+    }, [user]);
+
     // Metodo para procesar la creacion de alerta
     const handleCrearAlerta = async (e) => {
         e.preventDefault();
@@ -74,7 +74,7 @@ const Alertas = () => {
             setPrecioObjetivo('');
             setSuccess('Alerta configurada correctamente');
             await cargarAlertasUsuario();
-        } catch (err) {
+        } catch {
             setError('No se pudo crear la alerta');
         }
     };
