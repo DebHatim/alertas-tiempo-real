@@ -6,22 +6,39 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 // Crear Bean con Spring de esta clase
 @Component
+@Slf4j
 public class RateLimitingFilter extends OncePerRequestFilter {
 
+    private static class Entrada {
+        private final Bucket bucket;
+        private volatile Instant ultimoAcceso;
+
+        Entrada(Bucket bucket) {
+            this.bucket = bucket;
+            this.ultimoAcceso = Instant.now();
+        }
+    }
+
     // Mapa para guardar un Bucket de tokens por cada IP
-    private final Map<String, Bucket> cache =  new ConcurrentHashMap<>();
+    private final Map<String, Entrada> cache = new ConcurrentHashMap<>();
+
+    // IPs sin actividad durante mas de este tiempo se eliminan de la cache
+    private static final Duration TIEMPO_INACTIVIDAD = Duration.ofMinutes(30);
 
     // Crear un nuevo Bucket de tokens con la configuracion de limites que le indicamos
     private Bucket crearNuevoBucket() {
@@ -42,11 +59,12 @@ public class RateLimitingFilter extends OncePerRequestFilter {
 
             // Obtener la direccion ip del usuario que hace la peticion
             String ipclient = obtenerIpCliente(request);
-            // Buscar en la cache si existe un bucket para esa ip, si no existe se crea uno nuevo
-            Bucket bucket = cache.computeIfAbsent(ipclient, k -> crearNuevoBucket());
+            // Buscar en la cache si existe una entrada para esa ip, si no existe se crea una nueva
+            Entrada entrada = cache.computeIfAbsent(ipclient, k -> new Entrada(crearNuevoBucket()));
+            entrada.ultimoAcceso = Instant.now();
 
-            // Intenar consumir un token?
-            if (!bucket.tryConsume(1)) {
+            // Intentar consumir un token
+            if (!entrada.bucket.tryConsume(1)) {
                 // Bloquear la peticion devolviendo 429 Too Many Requests
                 response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
                 response.setContentType("application/json");
@@ -56,6 +74,18 @@ public class RateLimitingFilter extends OncePerRequestFilter {
         }
         // Continuar al siguiente filtro en la cadena de Spring Security
         filterChain.doFilter(request, response);
+    }
+
+    // Tarea periodica que limpia IPs inactivas para evitar fuga de memoria
+    @Scheduled(fixedDelay = 600_000) // cada 10 minutos
+    public void limpiarCacheInactiva() {
+        Instant limite = Instant.now().minus(TIEMPO_INACTIVIDAD);
+        int antes = cache.size();
+        cache.entrySet().removeIf(e -> e.getValue().ultimoAcceso.isBefore(limite));
+        int eliminadas = antes - cache.size();
+        if (eliminadas > 0) {
+            log.debug("RateLimitingFilter: {} entradas inactivas eliminadas de la cache", eliminadas);
+        }
     }
 
     // Metodo para extraer la direccion ip real del usuario
