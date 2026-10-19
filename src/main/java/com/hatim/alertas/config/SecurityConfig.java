@@ -2,6 +2,7 @@ package com.hatim.alertas.config;
 
 import com.hatim.alertas.security.JwtAuthenticationFilter;
 import com.hatim.alertas.security.RateLimitingFilter;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -63,6 +64,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**", "/ws/**", "/actuator/health").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/productos", "/api/productos/**").permitAll() // pagina indice para ver productos
 
+                        // Se bloquea para que ningun usuario autenticado pueda crear productos arbitrarios via API
+                        .requestMatchers(HttpMethod.POST, "/api/productos").denyAll()
+
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
 
                         // Endpoints que necesitan autenticacion explicita
@@ -71,6 +75,12 @@ public class SecurityConfig {
                         // El resto protegido
                         .anyRequest().authenticated()
                 )
+                // Respuesta JSON consistente con el resto de la API cuando se deniega un acceso
+                .exceptionHandling(ex -> ex.accessDeniedHandler((request, response, accessDeniedException) -> {
+                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    response.setContentType("application/json");
+                    response.getWriter().write("{\"error\": \"No tienes permisos para acceder a este recurso\"}");
+                }))
                 // Filtro para Rate Limiting
                 .addFilterBefore(rateLimitingFilter, UsernamePasswordAuthenticationFilter.class)
                 // Filtro JWT
