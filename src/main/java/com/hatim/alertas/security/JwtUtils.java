@@ -16,18 +16,24 @@ import java.util.Date;
 @Slf4j
 public class JwtUtils {
 
-    // Clave secreta harcodeada para desarrollo
-    @Value("${app.jwt.secret:esta_es_una_clave_secreta_muy_larga_y_segura_para_el_algoritmo_hs256}")
+    // Si no se define o app.jwt.secret la aplicacion no arranca
+    @Value("${app.jwt.secret}")
     private String secretKeyString;
 
     private SecretKey secretKey;
 
     // Expiracion de token en 24 horas
     private static final long EXPIRATION_TIME = 86400000;
+    // HS256 exige una clave de al menos 256 bits (32 bytes)
+    private static final int LONGITUD_MINIMA_SECRETO = 32;
 
     // Metodo para establecer la key, se ejecuta automaticamente
     @PostConstruct
     public void init() {
+        if (secretKeyString == null || secretKeyString.getBytes(StandardCharsets.UTF_8).length < LONGITUD_MINIMA_SECRETO) {
+            throw new IllegalStateException(
+                    "app.jwt.secret (APP_JWT_SECRET) debe tener al menos " + LONGITUD_MINIMA_SECRETO + " caracteres para HS256");
+        }
         this.secretKey = Keys.hmacShaKeyFor(secretKeyString.getBytes(StandardCharsets.UTF_8));
     }
 
