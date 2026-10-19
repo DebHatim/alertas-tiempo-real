@@ -7,6 +7,7 @@ import './Dashboard.css';
 const DashBoard = () => {
     const {user} = useContext(AuthContext);
     const [productos, setProductos] = useState([]);
+    const [cargandoProductos, setCargandoProductos] = useState(true);
 
     const [productoActualizado, setProductoActualizado] = useState({
         id: /** @type {number|null} */ (null),
@@ -20,7 +21,8 @@ const DashBoard = () => {
     useEffect(() => {
         productoService.getAll()
             .then(response => setProductos(response.data))
-            .catch(error => console.error("Error cargando productos:", error));
+            .catch(error => console.error("Error cargando productos:", error))
+            .finally(() => setCargandoProductos(false));
     }, []);
 
     // Reaccionar a la actualizacion de precios en tiempo real
@@ -111,7 +113,9 @@ const DashBoard = () => {
                 <div className="dashboard-card">
                     <h3>Productos Activos</h3>
                     <ul className="product-list">
-                        {productos.length > 0 ? (
+                        {cargandoProductos ? (
+                            <p className="no-products">Cargando productos...</p>
+                        ) : productos.length > 0 ? (
                             productos.map((prod) => {
                                 // 1. Comprobamos si este producto específico se está actualizando
                                 const estaActualizando = productoActualizado.id === prod.id;

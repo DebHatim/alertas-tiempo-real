@@ -10,6 +10,7 @@ const Alertas = () => {
     // Estados para los datos API
     const [productos, setProductos] = useState([])
     const [alertas, setAlertas] = useState([])
+    const [cargando, setCargando] = useState(true)
 
     // Estados para el formulario de nueva alerta
     const [productoSeleccionado, setProductoSeleccionado] = useState('')
@@ -26,6 +27,7 @@ const Alertas = () => {
                 await cargarProductos();
                 await cargarAlertasUsuario();
             }
+            setCargando(false);
         };
         arrancarDatos();
     }, [user]);
@@ -111,8 +113,8 @@ const Alertas = () => {
                     <div className="form-group">
                         <label>Selecciona un producto:</label>
                         <select value={productoSeleccionado}
-                            onChange={(e) => setProductoSeleccionado(e.target.value)}
-                            className="form-control">
+                                onChange={(e) => setProductoSeleccionado(e.target.value)}
+                                className="form-control">
                             {productos.map(p => (
                                 <option key={p.id} value={p.id}>{p.nombre} ({p.precioActual}€)</option>
                             ))}
@@ -122,8 +124,8 @@ const Alertas = () => {
                     <div className="form-group">
                         <label>Precio Objetivo (€):</label>
                         <input type="number" step="0.01" value={precioObjetivo} placeholder="Ej. 500"
-                            onChange={(e) => setPrecioObjetivo(e.target.value)}
-                            className="form-control" required />
+                               onChange={(e) => setPrecioObjetivo(e.target.value)}
+                               className="form-control" required />
                     </div>
 
                     <button type="submit" className="btn-submit-alert">
@@ -135,7 +137,9 @@ const Alertas = () => {
             {/* Monitoreo */}
             <div className="alerts-card">
                 <h3>Mis Alertas Configuradas</h3>
-                {alertas.length > 0 ? (
+                {cargando ? (
+                    <p className="no-alerts">Cargando alertas...</p>
+                ) : alertas.length > 0 ? (
                     <div className="alerts-grid">
                         {alertas.map(alerta => (
                             <div key={alerta.id} className="alert-item-card">
@@ -147,7 +151,7 @@ const Alertas = () => {
                                 </div>
                                 <div className="alert-actions">
                                     <button onClick={() => handleDesactivar(alerta.id)}
-                                        className={`btn-toggle-alert ${alerta.activa ? 'btn-pause' : 'btn-resume'}`}>
+                                            className={`btn-toggle-alert ${alerta.activa ? 'btn-pause' : 'btn-resume'}`}>
                                         {alerta.activa ? 'Pausar' : 'Activar'}
                                     </button>
 
