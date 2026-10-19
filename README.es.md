@@ -117,13 +117,19 @@ distribuir accidentalmente algo sin probar.
 **Único requisito:** Tener Docker instalado.
 
 1. Clonar el repositorio y copiar la plantilla de variables de entorno:
+
 ```bash
 git clone https://github.com/DebHatim/alertas-tiempo-real.git
 cd alertas-tiempo-real
 cp .env.example .env
 ```
 
+Antes de continuar, edita `.env` y rellena `MYSQL_ROOT_PASSWORD`, `DB_APP_USER`/`DB_APP_PASSWORD` (usuario de aplicación
+de la base de datos, sin privilegios de root) y `APP_JWT_SECRET` (cadena aleatoria de al menos 32 caracteres) con
+valores propios.
+
 2. Iniciar los servicios mediante Docker Compose:
+
 ```bash
 docker compose up -d
 ```
@@ -136,12 +142,20 @@ Este comando pone en marcha, de forma segura, MySQL, Zookeeper, Kafka, el backen
 - Verificación de estado (health check) del backend: `http://localhost:8080/actuator/health`
 - phpMyAdmin (para inspeccionar la base de datos): `http://localhost:8081`
 
-> **Nota sobre seguridad:** En un entorno de producción (por ejemplo, en un VPS), asegúrese de configurar una contraseña segura en su archivo `.env` (`MYSQL_ROOT_PASSWORD`). Tenga en cuenta que los puertos de la base de datos y del intermediario de mensajes (MySQL, Kafka) permanecen privados dentro de la red interna de Docker y no están expuestos directamente a internet.
+> **Nota sobre seguridad:** En un entorno de producción (por ejemplo, en un VPS), asegúrese de configurar una contraseña
+> segura en su archivo `.env` (`MYSQL_ROOT_PASSWORD`). Tenga en cuenta que los puertos de la base de datos y del
+> intermediario de mensajes (MySQL, Kafka) permanecen privados dentro de la red interna de Docker y no están expuestos
+> directamente a internet.
+
+El backend se conecta a MySQL con un usuario de aplicación dedicado (`DB_APP_USER`/`DB_APP_PASSWORD`), no como `root`;
+el usuario `root` queda reservado para phpMyAdmin y tareas de mantenimiento.
 
 <details>
 <summary>Desarrollo del backend sin Docker (opcional)</summary>
 
-Si prefiere trabajar directamente en el backend usando Maven, necesitará tener instalados Java 21 y Maven, además de contar con instancias de Kafka y MySQL 8 en ejecución (puede iniciar solo estos componentes mediante `docker compose up -d mysql kafka zookeeper`).
+Si prefiere trabajar directamente en el backend usando Maven, necesitará tener instalados Java 21 y Maven, además de
+contar con instancias de Kafka y MySQL 8 en ejecución (puede iniciar solo estos componentes mediante
+`docker compose up -d mysql kafka zookeeper`).
 
 ```bash
 ./mvnw spring-boot:run
@@ -155,7 +169,11 @@ npm install
 npm run dev
 ```
 
-Variables de entorno relevantes: `KAFKA_SERVERS`, `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, `APP_CORS_ALLOWED_ORIGIN` (para el backend) y `VITE_API_URL` (para el frontend, durante la fase de compilación).
+Variables de entorno relevantes para el backend: `KAFKA_SERVERS`, `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`,
+`APP_JWT_SECRET` (**obligatoria** — cadena aleatoria de al menos 32 caracteres; la aplicación no arranca sin ella) y
+`APP_CORS_ALLOWED_ORIGIN`. Opcionalmente, `APP_SIMULADOR_ENABLED` (`true` por defecto) desactiva el simulador de precios
+si se va a usar un catálogo de productos real. Para el frontend: `VITE_API_URL`, durante la fase de compilación.
+
 </details>
 
 ## Testing

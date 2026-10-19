@@ -12,7 +12,7 @@
 [![JWT](https://img.shields.io/badge/Auth-JWT-black)]()
 [![OpenAPI](https://img.shields.io/badge/API%20Docs-Swagger-85EA2D)](https://api-alertas.hatimdebboun.dev/swagger-ui/index.html)
 [![CI](https://github.com/DebHatim/alertas-tiempo-real/actions/workflows/ci.yml/badge.svg)](https://github.com/DebHatim/alertas-tiempo-real/actions/workflows/ci.yml)
-[![Portfolio](https://img.shields.io/badge/Portfolio-hatimdebboun.dev-emerald)](https://hatimdebboun.dev) 
+[![Portfolio](https://img.shields.io/badge/Portfolio-hatimdebboun.dev-emerald)](https://hatimdebboun.dev)
 
 A platform where users set custom alerts on products and get real-time notifications when the price drops below their
 target. Event-driven architecture with Apache Kafka at its core, stateless JWT authentication, and push notifications
@@ -125,13 +125,19 @@ shipping something untested by accident.
 **Only requirement:** Docker installed.
 
 1. Clone the repository and copy the environment variables template:
+
 ```bash
 git clone https://github.com/DebHatim/alertas-tiempo-real.git
 cd alertas-tiempo-real
 cp .env.example .env
 ```
 
+Before proceeding, edit `.env` and fill in `MYSQL_ROOT_PASSWORD`, `DB_APP_USER`/`DB_APP_PASSWORD` (the database
+application user, without root privileges), and `APP_JWT_SECRET` (a random string of at least 32 characters) with your
+own values.
+
 2. Start the services using Docker Compose:
+
 ```bash
 docker compose up -d
 ```
@@ -144,12 +150,18 @@ That single command spins up MySQL, Zookeeper, Kafka, the Spring Boot backend, a
 - Backend health check: `http://localhost:8080/actuator/health`
 - phpMyAdmin (inspect the DB): `http://localhost:8081`
 
-> **Note on Security:** In a production environment on your VPS, configure a secure password in your `.env` file (`MYSQL_ROOT_PASSWORD`). Notice that database and message broker ports (MySQL, Kafka) are kept private inside Docker's internal network and are not exposed directly to the public internet.
+> **Note on Security:** In a production environment on your VPS, configure a secure password in your `.env` file (
+`MYSQL_ROOT_PASSWORD`). Notice that database and message broker ports (MySQL, Kafka) are kept private inside Docker's
+> internal network and are not exposed directly to the public internet.
+
+The backend connects to MySQL with a dedicated application user (`DB_APP_USER`/`DB_APP_PASSWORD`), not as `root`; the
+`root` user is reserved for phpMyAdmin and maintenance tasks.
 
 <details>
 <summary>Backend development without Docker (optional)</summary>
 
-If you want to iterate directly on the backend with Maven, you need Java 21, Maven, and a running Kafka + MySQL 8 instance on your own (you can spin up just those components with `docker compose up -d mysql kafka zookeeper`).
+If you want to iterate directly on the backend with Maven, you need Java 21, Maven, and a running Kafka + MySQL 8
+instance on your own (you can spin up just those components with `docker compose up -d mysql kafka zookeeper`).
 
 ```bash
 ./mvnw spring-boot:run
@@ -163,7 +175,11 @@ npm install
 npm run dev
 ```
 
-Relevant environment variables: `KAFKA_SERVERS`, `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, `APP_CORS_ALLOWED_ORIGIN` (backend) and `VITE_API_URL` (frontend, build-time).
+Environment variables relevant to the backend: `KAFKA_SERVERS`, `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`,
+`APP_JWT_SECRET` (**mandatory** — a random string of at least 32 characters; the application will not start without it),
+and `APP_CORS_ALLOWED_ORIGIN`. Optionally, `APP_SIMULADOR_ENABLED` (`true` by default) can be used to disable the price
+simulator if a real product catalog is being used. For the frontend: `VITE_API_URL`, required during the build phase.
+
 </details>
 
 ## Testing
