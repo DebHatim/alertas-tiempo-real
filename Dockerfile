@@ -13,6 +13,10 @@ RUN mvn clean package -DskipTests
 FROM eclipse-temurin:21-jre-jammy
 WORKDIR /app
 
+# Instalar curl
+RUN apt-get update && apt-get install -y --no-install-recommends curl \
+    && rm -rf /var/lib/apt/lists/*
+
 # Copiar el .jar generado en la fase anterior
 COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8080
