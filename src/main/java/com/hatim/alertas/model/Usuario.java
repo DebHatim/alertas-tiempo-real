@@ -3,6 +3,8 @@ package com.hatim.alertas.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,14 +25,20 @@ public class Usuario {
 
     @Column(nullable = false)
     @JsonIgnore
-    private String password; // Contrasena del usuario
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private String password; // Contrasena excluida de toString/equals por seguridad
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<Alerta> alertas = new ArrayList<>();
 
     // Relacion con Notificaciones: Si el usuario se elimina, su historial tambien
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<Notificacion> notificaciones = new ArrayList<>();
 }
