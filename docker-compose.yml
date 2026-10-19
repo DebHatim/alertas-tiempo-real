@@ -5,6 +5,10 @@ services:
     environment:
       MYSQL_DATABASE: alertas
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      # Usuario de aplicacion con privilegios solo sobre la BD "alertas".
+      # La imagen oficial de MySQL lo crea automaticamente al arrancar.
+      MYSQL_USER: ${DB_APP_USER}
+      MYSQL_PASSWORD: ${DB_APP_PASSWORD}
     volumes:
       - mysql_data:/var/lib/mysql
     networks:
@@ -55,10 +59,12 @@ services:
         condition: service_started
     environment:
       - DB_URL=jdbc:mysql://mysql:3306/alertas?createDatabaseIfNotExist=true&serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true
-      - DB_USERNAME=root
-      - DB_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - DB_USERNAME=${DB_APP_USER}
+      - DB_PASSWORD=${DB_APP_PASSWORD}
       - KAFKA_SERVERS=kafka:29092
       - APP_CORS_ALLOWED_ORIGIN=${APP_CORS_ALLOWED_ORIGIN}
+      - APP_JWT_SECRET=${APP_JWT_SECRET}
+      - APP_SIMULADOR_ENABLED=${APP_SIMULADOR_ENABLED:-true}
     networks:
       - alertas-network
 
